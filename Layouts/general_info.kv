@@ -1,0 +1,127 @@
+#:kivy 2.1
+
+MDScreen: 
+	# this will create a space navigation bottom 
+	MDBottomNavigation: 
+
+		# this will create a navigation button on the bottom of screen 
+		MDBottomNavigationItem: 
+			name: 'screen 1' 
+			text: 'Informacje' 
+			icon: 'ethernet' 
+			# this will be triggered when screen 1 is selected
+			MDBoxLayout:
+				orientation: "vertical"
+				MDRaisedButton:
+					id: select_if_button
+					text: "Wybierz interfejs"
+					pos_hint: {"center_x": .5, "center_y": .5}
+					on_release: app.menu_if_names.open()
+				MDRaisedButton:
+					id: refresh_interval_button
+					text: "Wybierz częstotliwość odświeżania"
+					pos_hint: {"center_x": .5, "center_y": .5}
+					on_release: app.menu_interval.open()
+                MDLabel:
+					id: selected_if_label 
+					text:"Brak wybranego interfejsu"
+                    size_hint_y: None
+                    halign: "center"
+				MDBoxLayout:
+					orientation: "horizontal"
+					padding: "100dp"
+					MDBoxLayout:
+						orientation: "vertical"
+						MDLabel:
+							text: "Adres IP karty: "
+						MDLabel:
+							text: "Adres MAC karty: "
+						MDLabel:
+							text: "Adres serwera DNS: "
+						MDLabel:
+							text: "Adres bramy: "
+                        MDLabel:
+							text: "Adres DHCP: "
+						MDLabel:
+							text: "Pakiety wysłane"
+						MDLabel:
+							text: "Pakiety odebrane"
+						MDLabel:
+							text: "Utracone pakiety wychodzące"
+						MDLabel:
+							text: "Utracone pakiety przychodzące"
+						MDLabel:
+							text: "Aktualna prędkość wysyłania"
+						MDLabel:
+							text: "Aktualna prędkość pobierania"  
+					MDBoxLayout:
+						orientation: "vertical"
+						MDLabel:
+                        	id:int_IP
+							text: "Brak danych"
+						MDLabel:
+                        	id:int_MAC
+							text: "Brak danych"
+						MDLabel:
+							id:int_DNS
+							text: "Brak danych"
+						MDLabel:
+							id:int_GW
+							text: "Brak danych"
+                        MDLabel:
+                            id:int_DHCP
+							text: "Brak danych"
+						MDLabel:
+							id:int_SNT
+							text: "Brak danych"
+						MDLabel:
+							id:int_RCV
+							text: "Brak danych"
+						MDLabel:
+							id:int_LST_out
+							text: "Brak danych"
+						MDLabel:
+							id:int_LST_in
+							text: "Brak danych"
+						MDLabel:
+							id:int_speed_out
+							text: "Brak danych"
+						MDLabel:
+							id:int_speed_in
+							text: "Brak danych"
+				
+
+		# this will create a navigation button on the bottom of screen 
+		MDBottomNavigationItem: 
+			name: 'screen 2' 
+			text: 'Java' 
+			icon: 'language-java' 
+
+			# this will be triggered when screen 2 is selected 
+			# creates a label 
+			MDLabel: 
+				text: 'Java' 
+				halign: 'center' 
+
+		# this will create a navigation button on the bottom of screen 
+		MDBottomNavigationItem: 
+			name: 'screen 3' 
+			text: 'CPP' 
+			icon: 'language-cpp' 
+
+			# this will be triggered when screen 3 is selected 
+			# creates a label 
+			MDLabel: 
+				text: 'CPP' 
+				halign: 'center'
+		# this will create a navigation button on the bottom of screen 
+		MDBottomNavigationItem: 
+			name: 'screen 4' 
+			text: 'Settings' 
+			icon: 'wrench-cog-outline' 
+
+			# this will be triggered when screen 3 is selected 
+			# creates a label 
+			MDLabel: 
+				text: 'CPP' 
+				halign: 'center'
