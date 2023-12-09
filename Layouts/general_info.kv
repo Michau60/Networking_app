@@ -12,6 +12,7 @@ MDScreen:
 			# this will be triggered when screen 1 is selected
 			MDBoxLayout:
 				orientation: "vertical"
+				padding: 10
 				MDRaisedButton:
 					id: select_if_button
 					text: "Wybierz interfejs"
@@ -29,7 +30,7 @@ MDScreen:
                     halign: "center"
 				MDBoxLayout:
 					orientation: "horizontal"
-					padding: "100dp"
+					padding: "10dp"
 					MDBoxLayout:
 						orientation: "vertical"
 						MDLabel:
@@ -42,6 +43,8 @@ MDScreen:
 							text: "Adres bramy: "
                         MDLabel:
 							text: "Adres DHCP: "
+						MDLabel:
+							text: "Maska podsieci: "
 						MDLabel:
 							text: "Pakiety wysłane"
 						MDLabel:
@@ -70,6 +73,9 @@ MDScreen:
 							text: "Brak danych"
                         MDLabel:
                             id:int_DHCP
+							text: "Brak danych"
+						MDLabel:
+                            id:int_sub_mask
 							text: "Brak danych"
 						MDLabel:
 							id:int_SNT
