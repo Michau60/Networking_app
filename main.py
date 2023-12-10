@@ -1,5 +1,6 @@
 # import packages 
 import re
+import time
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivymd.uix.menu import MDDropdownMenu
@@ -11,6 +12,7 @@ from threading import Thread
 import interface_info
 import port_scanner
 from kivy.metrics import dp
+from kivy.uix.progressbar import ProgressBar
 
 class Test(MDApp):
     selected_IF = ""
@@ -76,7 +78,7 @@ class Test(MDApp):
             self.auto_refresh_event = None
 
 
-    def interfaces_menu_callback(self, text_item):
+    def interfaces_menu_callback(self, text_item): #menu wyboru dostępnych interfejsów
         self.screen.ids.selected_if_label.text ="Aktualnie wybrany:" + text_item
         current_interface=text_item
         self.selected_IF = current_interface
@@ -87,14 +89,14 @@ class Test(MDApp):
         self.start_auto_refresh()
         
         
-    def interval_menu_callback(self, text_item):
+    def interval_menu_callback(self, text_item): #menu wyboru interwału
         self.auto_refresh_interval = int(text_item)
         self.stop_auto_refresh()
         self.start_auto_refresh()
         self.menu_interval.dismiss()
 
 
-    def get_if_info(self,inf):
+    def get_if_info(self,inf): #pobieranie danych z wybranego interfejsu
         network_info = interface_info.int_info.get_network_info(inf)
         self.screen.ids.int_IP.text = str(network_info[0])
         self.screen.ids.int_MAC.text = str(network_info[1])
@@ -104,7 +106,7 @@ class Test(MDApp):
         self.screen.ids.int_sub_mask.text = str(network_info[5])
     
 
-    def packet_data_get_info(self,current_interface):
+    def packet_data_get_info(self,current_interface): #pobieranie danych o pakietach z wybranego interfejsu
         interface_packets_values=inf_stat.interface_data.get_packet_interface_data(current_interface)
         self.screen.ids.int_SNT.text = str(interface_packets_values[0])
         self.screen.ids.int_RCV.text = str(interface_packets_values[1])
@@ -112,20 +114,41 @@ class Test(MDApp):
         self.screen.ids.int_LST_in.text = str(interface_packets_values[3])
     
     
-    def get_net_usage_info(self,current_interface):
+    def get_net_usage_info(self,current_interface): #pobieranie danych o prędkości
         interface_speed_values=inf_stat.interface_data.net_usage(current_interface)
         self.screen.ids.int_speed_out.text = str(interface_speed_values[1])
         self.screen.ids.int_speed_in.text = str(interface_speed_values[0])
         
     
-    def port_scan(self,ip_addr,port_start,port_end):
+    # def port_scan(self,ip_addr,port_start,port_end): #pobieranie danych o przeskanowanych portach oraz wyświetlanie wyników
+    #     self.root.ids.result_layout.clear_widgets()
+    #     scan_results=port_scanner.port_scan.scan_ports(ip_addr,port_start,port_end)
+    #     sorted_results = sorted(scan_results, key=lambda x: int(x.split(" ")[1].split(":")[0]))#sortowanie po numerach portu
+    #     for result in sorted_results: #przedstawianie wyników w aplikacji
+    #         label = MDLabel(text=result, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+    #         self.root.ids.result_layout.add_widget(label)
+    
+    
+    def port_scan(self, ip_addr, port_start, port_end):  # pobieranie danych o przeskanowanych portach oraz wyświetlanie wyników
         self.root.ids.result_layout.clear_widgets()
-        scan_results=port_scanner.port_scan.scan_ports(ip_addr,port_start,port_end)
-        print(scan_results)
-        sorted_results = sorted(scan_results, key=lambda x: int(x.split(" ")[1].split(":")[0]))
-        for result in sorted_results:
-            label = MDLabel(text=result, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
-            self.root.ids.result_layout.add_widget(label)
+        scanning_label = MDLabel(text="Skanowanie w toku...", theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+        self.root.ids.result_layout.add_widget(scanning_label)
+
+        def callback(scan_results):
+            self.root.ids.result_layout.clear_widgets()
+            self.root.ids.result_layout.remove_widget(scanning_label)
+            sorted_results = sorted(scan_results, key=lambda x: int(x.split(" ")[1].split(":")[0]))  # sortowanie po numerach portu
+            for result in sorted_results:  # przedstawianie wyników w aplikacji
+                label = MDLabel(text=result, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+                self.root.ids.result_layout.add_widget(label)
+
+        # Utwórz nowy wątek, aby uniknąć blokowania GUI
+        t = Thread(target=lambda: self.port_scan_thread(ip_addr, port_start, port_end, callback))
+        t.start()
+
+    def port_scan_thread(self, ip_addr, port_start, port_end, callback):
+        scan_results = port_scanner.port_scan.scan_ports(ip_addr, port_start, port_end)
+        Clock.schedule_once(lambda dt: callback(scan_results))
     
     def is_button_disabled(self, ip_address, port_start, port_stop):
     # Sprawdzanie czy pola są puste
