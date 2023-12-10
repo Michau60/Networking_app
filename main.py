@@ -1,17 +1,20 @@
 # import packages 
+import re
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivymd.uix.menu import MDDropdownMenu
+from kivymd.uix.label import MDLabel
 import auto_size
 import interface_stats as inf_stat
 from kivy.clock import Clock
 from threading import Thread
-import interface_info as inf_info
+import interface_info
+import port_scanner
+from kivy.metrics import dp
 
 class Test(MDApp):
     selected_IF = ""
     auto_refresh_interval = 0 # Co ile sekund ma odświeżać dane
-    
     def __init__(self, **kwargs):
         super(Test, self).__init__(**kwargs)
         self.screen = Builder.load_file("./layouts/general_info.kv") #załadowanie interfejsu z pliku
@@ -92,17 +95,13 @@ class Test(MDApp):
 
 
     def get_if_info(self,inf):
-        adapter_guid = inf_info.get_guid_by_interface_name(inf)
-        network_info = inf_info.get_network_info(adapter_guid)
-        dns_info = inf_info.get_dns_info(inf)
-        dhcp_info = inf_info.get_dhcp_info(inf)
-        gw_info  = inf_info.get_gw_info(inf)
+        network_info = interface_info.int_info.get_network_info(inf)
         self.screen.ids.int_IP.text = str(network_info[0])
         self.screen.ids.int_MAC.text = str(network_info[1])
-        self.screen.ids.int_DNS.text = str(dns_info)
-        self.screen.ids.int_GW.text = str(gw_info)
-        self.screen.ids.int_DHCP.text = str(dhcp_info)
-        self.screen.ids.int_sub_mask.text = str(network_info[2])
+        self.screen.ids.int_DNS.text = str(network_info[2])
+        self.screen.ids.int_GW.text = str(network_info[3])
+        self.screen.ids.int_DHCP.text = str(network_info[4])
+        self.screen.ids.int_sub_mask.text = str(network_info[5])
     
 
     def packet_data_get_info(self,current_interface):
@@ -118,6 +117,40 @@ class Test(MDApp):
         self.screen.ids.int_speed_out.text = str(interface_speed_values[1])
         self.screen.ids.int_speed_in.text = str(interface_speed_values[0])
         
+    
+    def port_scan(self,ip_addr,port_start,port_end):
+        self.root.ids.result_layout.clear_widgets()
+        scan_results=port_scanner.port_scan.scan_ports(ip_addr,port_start,port_end)
+        print(scan_results)
+        sorted_results = sorted(scan_results, key=lambda x: int(x.split(" ")[1].split(":")[0]))
+        for result in sorted_results:
+            label = MDLabel(text=result, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+            self.root.ids.result_layout.add_widget(label)
+    
+    def is_button_disabled(self, ip_address, port_start, port_stop):
+    # Sprawdzanie czy pola są puste
+        if not ip_address or not port_start or not port_stop:
+            return True
+
+        # Sprawdzanie czy adres IP jest poprawny (brak błędu)
+        if not self.root.ids.ip_address_input.error:
+            return False
+
+        # Jeśli żaden z powyższych warunków nie jest spełniony, przycisk jest zablokowany
+        return True 
+            
+    def check_ip_format(self, text): #sprawdzanie poprawnosci wpisanego adresu ip
+        ip_pattern = re.compile(
+            r'^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
+            r'(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
+            r'(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
+            r'(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$'
+        )
+        if ip_pattern.match(text):
+            self.root.ids.ip_address_input.error = False
+        else:
+            self.root.ids.ip_address_input.error = True
+            self.root.ids.ip_address_input.helper_text = "Invalid IP Address"
         
     def build(self):
         return self.screen

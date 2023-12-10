@@ -1,15 +1,14 @@
 #:kivy 2.1
 
 MDScreen: 
-	# this will create a space navigation bottom 
 	MDBottomNavigation: 
 
-		# this will create a navigation button on the bottom of screen 
-		MDBottomNavigationItem: 
-			name: 'screen 1' 
-			text: 'Informacje' 
+ 
+		MDBottomNavigationItem: #informacje o interfejsach
+			name: 'Interface information' 
+			text: 'Info' 
 			icon: 'ethernet' 
-			# this will be triggered when screen 1 is selected
+			
 			MDBoxLayout:
 				orientation: "vertical"
 				padding: 10
@@ -97,31 +96,120 @@ MDScreen:
 							text: "Brak danych"
 				
 
-		# this will create a navigation button on the bottom of screen 
-		MDBottomNavigationItem: 
+		 
+		MDBottomNavigationItem: #skaner portów
 			name: 'screen 2' 
-			text: 'Java' 
-			icon: 'language-java' 
+			text: 'Port Scanner' 
+			icon: 'tab-search'
+			BoxLayout:
+        		orientation: 'vertical'
+				MDTextField:
+					id: ip_address_input
+					on_text: app.check_ip_format(self.text)
+					hint_text: "Enter IP Address"
+					helper_text: "e.g., 192.168.1.1"
+					helper_text_mode: "on_focus"
+					pos_hint: {'center_x': 0.5}
+					size_hint_x: None
+					width: 300
+					padding: [10, 10]
+				MDTextField:
+					id: port_start_input
+					input_filter: 'int'
+					hint_text: "Enter start port"
+					helper_text: "e.g., 22"
+					helper_text_mode: "on_focus"
+					pos_hint: {'center_x': 0.5}
+					size_hint_x: None
+					width: 300
+					padding: [10, 10]
+				MDTextField:
+					id: port_stop_input
+					input_filter: 'int'
+					hint_text: "Enter end port"
+					helper_text: "e.g., 80"
+					helper_text_mode: "on_focus"
+					pos_hint: {'center_x': 0.5}
+					size_hint_x: None
+					width: 300
+					padding: [10, 10]
 
-			# this will be triggered when screen 2 is selected 
-			# creates a label 
-			MDLabel: 
-				text: 'Java' 
-				halign: 'center' 
+				MDRaisedButton:
+					text: "Scan Ports"
+					pos_hint: {'center_x': 0.5}
+					on_release: app.port_scan(ip_address_input.text,port_start_input.text,port_stop_input.text)
+					disabled: app.is_button_disabled(ip_address_input.text, port_start_input.text, port_stop_input.text)
 
-		# this will create a navigation button on the bottom of screen 
-		MDBottomNavigationItem: 
+				ScrollView:
+					BoxLayout:
+						id: result_layout
+						orientation: 'vertical'
+						size_hint_y: None
+						height: self.minimum_height
+
+			
+		MDBottomNavigationItem: #DNS lookup
 			name: 'screen 3' 
-			text: 'CPP' 
-			icon: 'language-cpp' 
+			text: 'WHOIS dns' 
+			icon: 'search-web' 
 
 			# this will be triggered when screen 3 is selected 
 			# creates a label 
 			MDLabel: 
-				text: 'CPP' 
+				text: 'WHOIS dns' 
 				halign: 'center'
-		# this will create a navigation button on the bottom of screen 
+		 
+		MDBottomNavigationItem: #Urządzenia w sieci
+			name: 'screen 5' 
+			text: 'LAN' 
+			icon: 'test-tube' 
+
+			# this will be triggered when screen 3 is selected 
+			# creates a label 
+			MDLabel: 
+				text: 'Test' 
+				halign: 'center'
+		MDBottomNavigationItem: #pingowanie
+			name: 'screen 6' 
+			text: 'Ping' 
+			icon: 'test-tube' 
+
+			# this will be triggered when screen 3 is selected 
+			# creates a label 
+			MDLabel: 
+				text: 'Test' 
+				halign: 'center'
+		MDBottomNavigationItem: #traceroute
+			name: 'screen 7' 
+			text: 'Traceroute' 
+			icon: 'test-tube' 
+
+			# this will be triggered when screen 3 is selected 
+			# creates a label 
+			MDLabel: 
+				text: 'Test' 
+				halign: 'center'
+		MDBottomNavigationItem: #iperf
+			name: 'screen 8' 
+			text: 'IPerf' 
+			icon: 'test-tube' 
+
+			# this will be triggered when screen 3 is selected 
+			# creates a label 
+			MDLabel: 
+				text: 'Test' 
+				halign: 'center'
 		MDBottomNavigationItem: 
+			name: 'screen 9' 
+			text: 'Test' 
+			icon: 'test-tube' 
+
+			# this will be triggered when screen 3 is selected 
+			# creates a label 
+			MDLabel: 
+				text: 'Test' 
+				halign: 'center'
+		MDBottomNavigationItem: #ustawienia
 			name: 'screen 4' 
 			text: 'Settings' 
 			icon: 'wrench-cog-outline' 
@@ -129,5 +217,5 @@ MDScreen:
 			# this will be triggered when screen 3 is selected 
 			# creates a label 
 			MDLabel: 
-				text: 'CPP' 
+				text: 'SETTINGS' 
 				halign: 'center'

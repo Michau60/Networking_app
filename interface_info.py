@@ -1,72 +1,86 @@
-import netifaces
 import wmi
-#zmodyfikować pobieranie parametrów poprzez wmi a nie netifaces
-def get_guid_by_interface_name(interface_name):
-    try:
-        wmi_obj = wmi.WMI()
-        network_config = wmi_obj.Win32_NetworkAdapterConfiguration(IPEnabled=True)
 
-        for config in network_config:
-            if interface_name.lower() in config.Description.lower():
-                return config.SettingID  # SettingID w Win32_NetworkAdapterConfiguration zawiera GUID
-
-        return None
-    except Exception as e:
-        print(f"Błąd przy uzyskiwaniu GUID interfejsu: {e}")
-        return None
-
-def get_network_info(interface):
-    try:
-        interfaces = netifaces.interfaces()
+class int_info:
         
-        # Pobierz informacje o interfejsie
-        addrs = netifaces.ifaddresses(interface)
-
-        # Adres IP
-        ip_address = addrs[netifaces.AF_INET][0]['addr'] if netifaces.AF_INET in addrs else "Brak danych"
-
-        # Adres MAC
-        mac_address = addrs[netifaces.AF_LINK][0]['addr'] if netifaces.AF_LINK in addrs else "Brak danych"
-
-        # Maska podsieci
-        subnet_mask = addrs[netifaces.AF_INET][0]['netmask'] if netifaces.AF_INET in addrs else "Brak danych"
-        
-        return ip_address, mac_address, subnet_mask 
-    except Exception as e:
-        print(f"Błąd podczas pobierania informacji o interfejsie {interface}: {e}")
-        return "Brak danych"
+    def get_network_info(interface):
+        ip_info = int_info.get_IP_info(interface)
+        mac_info = int_info.get_MAC_info(interface)
+        mask_info = int_info.get_mask_info(interface)
+        dns_info = int_info.get_dns_info(interface)
+        dhcp_info = int_info.get_dhcp_info(interface)
+        gw_info = int_info.get_gw_info(interface)
+        return ip_info, mac_info, dns_info, gw_info, dhcp_info, mask_info 
     
+    
+    def get_IP_info(connection_name):
+        c = wmi.WMI()
 
-def get_dns_info(connection_name):
-    c = wmi.WMI()
-
-    # Iteracja przez interfejsy sieciowe
-    for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-        if connection_name.lower() in interface.Description.lower():
-            # Sprawdź, czy istnieje adres DNS
-            dns_servers = interface.DNSServerSearchOrder
-            if dns_servers:
-                return f"{', '.join(dns_servers)}"
-            else:
-                return "Brak danych"
-
-def get_dhcp_info(connection_name):
-    c = wmi.WMI()
-    for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-        if connection_name.lower() in interface.Description.lower():
-                # Sprawdź, czy interfejs korzysta z DHCP
-            if interface.DHCPEnabled:
-                return interface.DHCPServer
-            else:
-                "Brak danych"
+        # Iteracja przez interfejsy sieciowe
+        for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
+            if connection_name.lower() in interface.Description.lower():
+                # Sprawdź, czy istnieje adres IP
+                ip_info = interface.IPAddress
+                if ip_info:
+                    return ip_info[0]
+                else:
+                    return "Brak danych"
                 
-                
-def get_gw_info(connection_name):
-    c = wmi.WMI()
-    for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-        if connection_name.lower() in interface.Description.lower():
-                # Sprawdź, czy interfejs korzysta z DHCP
-            if interface.DefaultIPGateway:
-                return interface.DefaultIPGateway[0]
-            else:
-                "Brak danych"
+    def get_MAC_info(connection_name):
+        c = wmi.WMI()
+
+        # Iteracja przez interfejsy sieciowe
+        for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
+            if connection_name.lower() in interface.Description.lower():
+                # Sprawdź, czy istnieje adres IP
+                mac_info = interface.MACAddress
+                if mac_info:
+                    return mac_info
+                else:
+                    return "Brak danych"
+    
+    def get_mask_info(connection_name):
+        c = wmi.WMI()
+
+        # Iteracja przez interfejsy sieciowe
+        for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
+            if connection_name.lower() in interface.Description.lower():
+                # Sprawdź, czy istnieje adres IP
+                subnet_mask = interface.IPSubnet
+                if subnet_mask:
+                    return subnet_mask[0]
+                else:
+                    return "Brak danych"
+    
+    def get_dns_info(connection_name):
+        c = wmi.WMI()
+
+        # Iteracja przez interfejsy sieciowe
+        for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
+            if connection_name.lower() in interface.Description.lower():
+                # Sprawdź, czy istnieje adres DNS
+                dns_servers = interface.DNSServerSearchOrder
+                if dns_servers:
+                    return f"{', '.join(dns_servers)}"
+                else:
+                    return "Brak danych"
+    
+    def get_dhcp_info(connection_name):
+        c = wmi.WMI()
+        for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
+            if connection_name.lower() in interface.Description.lower():
+                    # Sprawdź, czy interfejs korzysta z DHCP
+                if interface.DHCPEnabled:
+                    return interface.DHCPServer
+                else:
+                    "Brak danych"
+                    
+                    
+    def get_gw_info(connection_name):
+        c = wmi.WMI()
+        for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
+            if connection_name.lower() in interface.Description.lower():
+                    # Sprawdź, czy interfejs korzysta z DHCP
+                if interface.DefaultIPGateway:
+                    return interface.DefaultIPGateway[0]
+                else:
+                    "Brak danych"
