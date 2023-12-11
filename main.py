@@ -1,6 +1,5 @@
 # import packages 
 import re
-import time
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivymd.uix.menu import MDDropdownMenu
@@ -12,16 +11,17 @@ from threading import Thread
 import interface_info
 import port_scanner
 from kivy.metrics import dp
-from kivy.uix.progressbar import ProgressBar
+import misc
 
 class Test(MDApp):
     selected_IF = ""
     auto_refresh_interval = 0 # Co ile sekund ma odświeżać dane
+    selected_port_filter = "Show open ports"
     def __init__(self, **kwargs):
         super(Test, self).__init__(**kwargs)
-        self.screen = Builder.load_file("./layouts/general_info.kv") #załadowanie interfejsu z pliku
+        self.screen = Builder.load_file("./layouts/layout.kv") #załadowanie interfejsu z pliku
         int_names=inf_stat.interface_data.get_if_names()
-        
+        choose = ["Show open ports","Show all"]
         interfaces_menu_items = [
             {
                 "text": f"{i}",
@@ -38,10 +38,18 @@ class Test(MDApp):
             } for i in range(10+1)
         ]
         
+        filter_menu_items = [
+            {
+                "text": f"{i}",
+                "viewclass":"AutoSizingOneLineListItem",
+                "on_release": lambda x=f"{i}": self.port_menu_callback(x),
+            } for i in choose
+        ]
+        
         self.menu_if_names = MDDropdownMenu(
             caller=self.screen.ids.select_if_button,
             items=interfaces_menu_items,
-            width_mult=inf_stat.interface_data.get_max_name_len(int_names),  # Ustawianie szerokości wiersza
+            width_mult=auto_size.AutoSizingOneLineListItem.get_max_name_len(int_names)/3,  # Ustawianie szerokości wiersza
         )
         
         self.menu_interval = MDDropdownMenu(
@@ -50,11 +58,17 @@ class Test(MDApp):
             width_mult=2,  # Ustawianie szerokości wiersza
         )
         
+        self.port_view_menu = MDDropdownMenu(
+            caller = self.screen.ids.select_port_filter_button,
+            items = filter_menu_items,
+            width_mult=4
+        )
+        self.port_view_menu.text = "Show open ports"
         self.auto_refresh_event = None  # Zmienna przechowująca zdarzenie zegara
         self.auto_refresh_interval = 1
     
     
-    def start_auto_refresh(self):
+    def start_auto_refresh(self): #włączanie automatycznego odświeżania danych
         if not self.auto_refresh_event:
             self.auto_refresh_event = Clock.schedule_interval(self.auto_refresh, self.auto_refresh_interval)
 
@@ -94,6 +108,12 @@ class Test(MDApp):
         self.stop_auto_refresh()
         self.start_auto_refresh()
         self.menu_interval.dismiss()
+        
+
+    def port_menu_callback(self, text_item):
+        self.screen.ids.select_port_filter_button.text = text_item
+        self.selected_port_filter = text_item
+        self.port_view_menu.dismiss()
 
 
     def get_if_info(self,inf): #pobieranie danych z wybranego interfejsu
@@ -118,17 +138,8 @@ class Test(MDApp):
         interface_speed_values=inf_stat.interface_data.net_usage(current_interface)
         self.screen.ids.int_speed_out.text = str(interface_speed_values[1])
         self.screen.ids.int_speed_in.text = str(interface_speed_values[0])
-        
     
-    # def port_scan(self,ip_addr,port_start,port_end): #pobieranie danych o przeskanowanych portach oraz wyświetlanie wyników
-    #     self.root.ids.result_layout.clear_widgets()
-    #     scan_results=port_scanner.port_scan.scan_ports(ip_addr,port_start,port_end)
-    #     sorted_results = sorted(scan_results, key=lambda x: int(x.split(" ")[1].split(":")[0]))#sortowanie po numerach portu
-    #     for result in sorted_results: #przedstawianie wyników w aplikacji
-    #         label = MDLabel(text=result, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
-    #         self.root.ids.result_layout.add_widget(label)
-    
-    
+          
     def port_scan(self, ip_addr, port_start, port_end):  # pobieranie danych o przeskanowanych portach oraz wyświetlanie wyników
         self.root.ids.result_layout.clear_widgets()
         scanning_label = MDLabel(text="Skanowanie w toku...", theme_text_color="Secondary", size_hint_y=None, height=dp(40))
@@ -137,11 +148,9 @@ class Test(MDApp):
         def callback(scan_results):
             self.root.ids.result_layout.clear_widgets()
             self.root.ids.result_layout.remove_widget(scanning_label)
-            sorted_results = sorted(scan_results, key=lambda x: int(x.split(" ")[1].split(":")[0]))  # sortowanie po numerach portu
-            for result in sorted_results:  # przedstawianie wyników w aplikacji
-                label = MDLabel(text=result, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
-                self.root.ids.result_layout.add_widget(label)
-
+            sorted_port_list = sorted(scan_results, key=lambda x: int(x.split(" ")[1].split(":")[0]))  # sortowanie po numerach portu
+            self.port_view_filter(sorted_port_list, self.selected_port_filter)
+                                
         # Utwórz nowy wątek, aby uniknąć blokowania GUI
         t = Thread(target=lambda: self.port_scan_thread(ip_addr, port_start, port_end, callback))
         t.start()
@@ -149,6 +158,14 @@ class Test(MDApp):
     def port_scan_thread(self, ip_addr, port_start, port_end, callback):
         scan_results = port_scanner.port_scan.scan_ports(ip_addr, port_start, port_end)
         Clock.schedule_once(lambda dt: callback(scan_results))
+    
+    
+    def port_view_filter(self,port_list,option):
+        filtered_port_list = misc.Tools.print_list_items(port_list,option)
+        for result in filtered_port_list:  # przedstawianie wyników w aplikacji
+                label = MDLabel(text=result, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+                self.root.ids.result_layout.add_widget(label)     
+    
     
     def is_button_disabled(self, ip_address, port_start, port_stop):
     # Sprawdzanie czy pola są puste

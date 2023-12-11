@@ -5,9 +5,6 @@ class interface_data:
         if_names=psutil.net_if_addrs().keys()
         return if_names
     
-    def get_max_name_len(name):
-        return len(max(name, key=len))
-    
     def net_usage(inf):  
         net_stat = psutil.net_io_counters(pernic=True, nowrap=True)[inf]
         net_in_1 = net_stat.bytes_recv

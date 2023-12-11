@@ -34,9 +34,9 @@ class port_scan:
                     result = sock.connect_ex((ip_address, port))
                     print(port, result)
                     if result == 0:
-                        Port_list.append("Port {}: Open".format(port))
+                        Port_list.append("Port {}:Open".format(port))
                     else:
-                        Port_list.append("Port {}: Closed".format(port))
+                        Port_list.append("Port {}:Closed".format(port))
             except Exception as e:
                 Port_list.append("Port {}: Error - {}".format(port, str(e)))
 

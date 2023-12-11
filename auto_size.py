@@ -10,5 +10,6 @@ class AutoSizingOneLineListItem(OneLineListItem):
     def adjust_height(self, instance, size):
         instance.height = size[1] / self.line_height + dp(16)  # dp(16) to add some padding
         
-    def get_max_name_len(names):
-        return max(names,key=len)
+    def get_max_name_len(name):
+        return len(max(name, key=len))
+

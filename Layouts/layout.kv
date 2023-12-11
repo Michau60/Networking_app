@@ -103,6 +103,7 @@ MDScreen:
 			icon: 'tab-search'
 			BoxLayout:
         		orientation: 'vertical'
+				spacing: dp(10)
 				MDTextField:
 					id: ip_address_input
 					on_text: app.check_ip_format(self.text)
@@ -133,12 +134,16 @@ MDScreen:
 					size_hint_x: None
 					width: 300
 					padding: [10, 10]
-
 				MDRaisedButton:
 					text: "Scan Ports"
 					pos_hint: {'center_x': 0.5}
 					on_release: app.port_scan(ip_address_input.text,port_start_input.text,port_stop_input.text)
 					disabled: app.is_button_disabled(ip_address_input.text, port_start_input.text, port_stop_input.text)
+				MDRaisedButton:
+					id: select_port_filter_button
+					text: "Show open ports"
+					pos_hint: {"center_x": .5, "center_y": .5}
+					on_release: app.port_view_menu.open()
 
 				ScrollView:
 					BoxLayout:
