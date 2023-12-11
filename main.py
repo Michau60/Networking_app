@@ -12,6 +12,7 @@ import interface_info
 import port_scanner
 from kivy.metrics import dp
 import misc
+import domain_lookup
 
 class Test(MDApp):
     selected_IF = ""
@@ -155,6 +156,7 @@ class Test(MDApp):
         t = Thread(target=lambda: self.port_scan_thread(ip_addr, port_start, port_end, callback))
         t.start()
 
+
     def port_scan_thread(self, ip_addr, port_start, port_end, callback):
         scan_results = port_scanner.port_scan.scan_ports(ip_addr, port_start, port_end)
         Clock.schedule_once(lambda dt: callback(scan_results))
@@ -167,18 +169,49 @@ class Test(MDApp):
                 self.root.ids.result_layout.add_widget(label)     
     
     
-    def is_button_disabled(self, ip_address, port_start, port_stop):
+    def is_port_button_disabled(self, ip_address, port_start, port_stop):
     # Sprawdzanie czy pola są puste
         if not ip_address or not port_start or not port_stop:
             return True
 
-        # Sprawdzanie czy adres IP jest poprawny (brak błędu)
+        # Sprawdzanie czy adres IP jest poprawny
         if not self.root.ids.ip_address_input.error:
             return False
 
         # Jeśli żaden z powyższych warunków nie jest spełniony, przycisk jest zablokowany
         return True 
-            
+    
+    
+    def is_lookup_button_disabled(self,domain_address):
+    # Sprawdzanie czy pola są puste
+        if not domain_address:
+            return True
+
+        # Sprawdzanie czy adres domeny jest poprawny
+        if not self.root.ids.ip_address_input.error:
+            return False
+
+        # Jeśli żaden z powyższych warunków nie jest spełniony, przycisk jest zablokowany
+        return True  
+    
+    
+    def domain_info(self, domain):
+        self.root.ids.dns_result_layout.clear_widgets()
+        domain_info = domain_lookup.domain_info.get_domain_info(domain)
+        for key, value in domain_info.items():
+            label_text = f"{key}: {value}"
+            label = MDLabel(text=label_text, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+            self.root.ids.dns_result_layout.add_widget(label)
+    
+    def is_valid_domain_name(self,text): #sprawdzanie poprawnosci nazwy domeny
+        domain_pattern = re.compile(r'^(?!:\/\/)([a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$')
+        if domain_pattern.match(text):
+            self.root.ids.domain_address_input.error = False
+        else:
+            self.root.ids.domain_address_input.error = True
+            self.root.ids.domain_address_input.helper_text = "Invalid domain Address"
+    
+           
     def check_ip_format(self, text): #sprawdzanie poprawnosci wpisanego adresu ip
         ip_pattern = re.compile(
             r'^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'

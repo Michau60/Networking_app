@@ -11,7 +11,7 @@ MDScreen:
 			
 			MDBoxLayout:
 				orientation: "vertical"
-				padding: 10
+				spacing: dp(10)
 				MDRaisedButton:
 					id: select_if_button
 					text: "Wybierz interfejs"
@@ -138,7 +138,7 @@ MDScreen:
 					text: "Scan Ports"
 					pos_hint: {'center_x': 0.5}
 					on_release: app.port_scan(ip_address_input.text,port_start_input.text,port_stop_input.text)
-					disabled: app.is_button_disabled(ip_address_input.text, port_start_input.text, port_stop_input.text)
+					disabled: app.is_port_button_disabled(ip_address_input.text, port_start_input.text, port_stop_input.text)
 				MDRaisedButton:
 					id: select_port_filter_button
 					text: "Show open ports"
@@ -157,20 +157,36 @@ MDScreen:
 			name: 'screen 3' 
 			text: 'WHOIS dns' 
 			icon: 'search-web' 
+			BoxLayout:
+				orientation: "vertical"
+				spacing: dp(10)
+				MDTextField:
+					id: domain_address_input
+					on_text: app.is_valid_domain_name(self.text)
+					hint_text: "Enter domain Address"
+					helper_text: "e.g., example.com"
+					helper_text_mode: "on_focus"
+					pos_hint: {'center_x': 0.5}
+					size_hint_x: None
+					width: 300
+				MDRaisedButton:
+					text: "Lookup"
+					pos_hint: {'center_x': 0.5}
+					on_release: app.domain_info(domain_address_input.text)
+					disabled: app.is_lookup_button_disabled(domain_address_input.text)
+				ScrollView:
+					BoxLayout:
+						id: dns_result_layout
+						orientation: 'vertical'
+						spacing: dp(30)
+						size_hint_y: None
+						height: self.minimum_height
 
-			# this will be triggered when screen 3 is selected 
-			# creates a label 
-			MDLabel: 
-				text: 'WHOIS dns' 
-				halign: 'center'
-		 
+
 		MDBottomNavigationItem: #Urządzenia w sieci
 			name: 'screen 5' 
 			text: 'LAN' 
 			icon: 'test-tube' 
-
-			# this will be triggered when screen 3 is selected 
-			# creates a label 
 			MDLabel: 
 				text: 'Test' 
 				halign: 'center'
@@ -207,10 +223,7 @@ MDScreen:
 		MDBottomNavigationItem: 
 			name: 'screen 9' 
 			text: 'Test' 
-			icon: 'test-tube' 
-
-			# this will be triggered when screen 3 is selected 
-			# creates a label 
+			icon: 'test-tube'  
 			MDLabel: 
 				text: 'Test' 
 				halign: 'center'
