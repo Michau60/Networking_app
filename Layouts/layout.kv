@@ -185,11 +185,29 @@ MDScreen:
 
 		MDBottomNavigationItem: #Urządzenia w sieci
 			name: 'screen 5' 
-			text: 'LAN' 
-			icon: 'test-tube' 
-			MDLabel: 
-				text: 'Test' 
-				halign: 'center'
+			text: 'LAN devices' 
+			icon: 'help-network' 
+			BoxLayout:
+				orientation: 'vertical'
+				spacing: dp(10)
+				padding: dp(10)
+				MDTextField:
+					id: network_address_input
+					on_text: app.check_network_format(self.text)
+					hint_text: "Enter address (e.g., 192.168.1.0/24)"
+					helper_text: "e.g., 192.168.1.0/24"
+					helper_text_mode: "on_focus"
+					pos_hint: {'center_x': 0.5}
+					size_hint_x: None
+					width: 300
+				MDRaisedButton:
+					text: "Scan Network"
+					pos_hint: {'center_x': 0.5}
+					on_release: app.scan_network(network_address_input.text)
+					disabled: app.is_discover_button_disabled(network_address_input.text)
+				ScrollView:
+					MDList:
+						id: device_list
 		MDBottomNavigationItem: #pingowanie
 			name: 'screen 6' 
 			text: 'Ping' 

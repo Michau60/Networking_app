@@ -13,6 +13,7 @@ import port_scanner
 from kivy.metrics import dp
 import misc
 import domain_lookup
+import NetworkDiscover
 
 class Test(MDApp):
     selected_IF = ""
@@ -182,6 +183,19 @@ class Test(MDApp):
         return True 
     
     
+    def is_discover_button_disabled(self, ip_address):
+    # Sprawdzanie czy pola są puste
+        if not ip_address:
+            return True
+
+        # Sprawdzanie czy adres IP jest poprawny
+        if not self.root.ids.network_address_input.error:
+            return False
+
+        # Jeśli żaden z powyższych warunków nie jest spełniony, przycisk jest zablokowany
+        return True 
+    
+    
     def is_lookup_button_disabled(self,domain_address):
     # Sprawdzanie czy pola są puste
         if not domain_address:
@@ -224,6 +238,45 @@ class Test(MDApp):
         else:
             self.root.ids.ip_address_input.error = True
             self.root.ids.ip_address_input.helper_text = "Invalid IP Address"
+            
+
+    def check_network_format(self, text):
+        ip_pattern = re.compile(
+            r'^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
+            r'(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
+            r'(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
+            r'(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)'
+            r'/(3[0-2]|[1-2]?[0-9])$'  # Dodatkowo sprawdzany prefix length (0-32)
+        )
+
+        network_input = self.root.ids.network_address_input
+
+        if ip_pattern.match(text):
+            network_input.error = False
+            network_input.helper_text = ""
+        else:
+            network_input.error = True
+            network_input.helper_text_mode = "persistent"
+            network_input.helper_text = "Invalid network address or mask"
+    
+      
+    def scan_network(self, network):
+        device_list = self.root.ids.device_list
+        device_list.clear_widgets()
+
+        def callback(scan_results):
+            for device in scan_results:
+                label_text = f"IP Address: {device['ip']}, Hostname: {device['hostname']}, MAC Address: {device['mac']}"
+                label = MDLabel(text=label_text, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+                device_list.add_widget(label)
+                                
+        t = Thread(target=lambda: self.network_scan_thread(network, callback))
+        t.start()
+
+    def network_scan_thread(self, network,callback):
+        scan_results = NetworkDiscover.NetworkScanner.scan_network(network)
+        Clock.schedule_once(lambda dt: callback(scan_results))
+    
         
     def build(self):
         return self.screen
