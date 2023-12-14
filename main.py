@@ -1,5 +1,6 @@
 # import packages 
 import re
+from kivy.resources import resource_add_path
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivymd.uix.menu import MDDropdownMenu
@@ -14,14 +15,22 @@ from kivy.metrics import dp
 import misc
 import domain_lookup
 import NetworkDiscover
-
+import os,sys
 class Test(MDApp):
     selected_IF = ""
     auto_refresh_interval = 0 # Co ile sekund ma odświeżać dane
     selected_port_filter = "Show open ports"
+    @staticmethod
+    def resource_path(relative_path):
+        try:
+            base_path = sys._MEIPASS
+        except Exception:
+            base_path = os.path.abspath('.')
+        return os.path.join(base_path,relative_path)
     def __init__(self, **kwargs):
         super(Test, self).__init__(**kwargs)
-        self.screen = Builder.load_file("./layouts/layout.kv") #załadowanie interfejsu z pliku
+        self.screen = Builder.load_file("./Layouts/layout.kv") #załadowanie interfejsu z pliku
+        #self.screen = Builder.load_file(self.resource_path('Layouts/layout.kv'))
         int_names=inf_stat.interface_data.get_if_names()
         choose = ["Show open ports","Show all"]
         interfaces_menu_items = [
@@ -281,4 +290,12 @@ class Test(MDApp):
     def build(self):
         return self.screen
 
-Test().run()
+
+if __name__ == '__main__':
+    try:
+        if hasattr(sys, '_MEIPASS'):
+            resource_add_path(os.path.join(sys._MEIPASS))
+        Test().run()
+    except Exception as e:
+        print(e)
+        input("Press enter.")
