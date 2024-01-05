@@ -16,6 +16,7 @@ import misc
 import domain_lookup
 import NetworkDiscover
 import os,sys
+import adress_ping as ap
 class Test(MDApp):
     selected_IF = ""
     auto_refresh_interval = 0 # Co ile sekund ma odświeżać dane
@@ -185,11 +186,27 @@ class Test(MDApp):
             return True
 
         # Sprawdzanie czy adres IP jest poprawny
-        if not self.root.ids.ip_address_input.error:
+        if not self.root.ids.port_ip_address_input.error:
             return False
 
         # Jeśli żaden z powyższych warunków nie jest spełniony, przycisk jest zablokowany
         return True 
+    
+    
+    def is_ping_button_disabled(self, ip_address,count):
+        print(f"IP Address: {ip_address}")
+        if not ip_address:
+            print("IP Address is empty. Button disabled.")
+            return True
+
+        # Sprawdzanie czy adres IP jest poprawny
+        if self.root.ids.ping_ip_address_input.error == False and count and count.isdigit() and int(count)>0:
+            print("IP Address is valid. Button enabled.")
+            return False
+
+        # Jeśli żaden z powyższych warunków nie jest spełniony, przycisk jest zablokowany
+        print("Button disabled.")
+        return True    
     
     
     def is_discover_button_disabled(self, ip_address):
@@ -225,6 +242,7 @@ class Test(MDApp):
             label_text = f"{key}: {value}"
             label = MDLabel(text=label_text, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
             self.root.ids.dns_result_layout.add_widget(label)
+   
     
     def is_valid_domain_name(self,text): #sprawdzanie poprawnosci nazwy domeny
         domain_pattern = re.compile(r'^(?!:\/\/)([a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$')
@@ -235,7 +253,8 @@ class Test(MDApp):
             self.root.ids.domain_address_input.helper_text = "Invalid domain Address"
     
            
-    def check_ip_format(self, text): #sprawdzanie poprawnosci wpisanego adresu ip
+    def check_ip_format(self,text,field_id): #sprawdzanie poprawnosci wpisanego adresu ip
+        ip_address_input = self.root.ids[field_id]
         ip_pattern = re.compile(
             r'^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
             r'(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
@@ -243,11 +262,16 @@ class Test(MDApp):
             r'(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$'
         )
         if ip_pattern.match(text):
-            self.root.ids.ip_address_input.error = False
+            ip_address_input.error = False
+            ip_address_input.helper_text=""
+            print("match")
+            print(ip_address_input.error)
         else:
-            self.root.ids.ip_address_input.error = True
-            self.root.ids.ip_address_input.helper_text = "Invalid IP Address"
-            
+            ip_address_input.error = True
+            ip_address_input.helper_text_mode = "persistent"
+            ip_address_input.helper_text = "Invalid IP Address"
+            print(ip_address_input.error)
+            print("nomatch")  
 
     def check_network_format(self, text):
         ip_pattern = re.compile(
@@ -263,6 +287,7 @@ class Test(MDApp):
         if ip_pattern.match(text):
             network_input.error = False
             network_input.helper_text = ""
+            
         else:
             network_input.error = True
             network_input.helper_text_mode = "persistent"
@@ -272,8 +297,11 @@ class Test(MDApp):
     def scan_network(self, network):
         device_list = self.root.ids.device_list
         device_list.clear_widgets()
+        scanning_label = MDLabel(text="Skanowanie w toku...", theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+        self.root.ids.result_layout_scan.add_widget(scanning_label)
 
         def callback(scan_results):
+            self.root.ids.result_layout_scan.remove_widget(scanning_label)
             for device in scan_results:
                 label_text = f"IP Address: {device['ip']}, Hostname: {device['hostname']}, MAC Address: {device['mac']}"
                 label = MDLabel(text=label_text, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
@@ -286,10 +314,41 @@ class Test(MDApp):
         scan_results = NetworkDiscover.NetworkScanner.scan_network(network)
         Clock.schedule_once(lambda dt: callback(scan_results))
     
+    def start_ping_thread(self, ip_address, number_ping):
+        # Ustawiamy adres IP i liczbę pingów w instancji klasy AddressPing
+        self.ping_instance.ip_address = ip_address
+        self.ping_instance.number_ping = number_ping
+
+        # Uruchamiamy wątek do pingowania
+        ping_thread = Thread(target=self.ping_thread)
+        ping_thread.start()
+
+    def ping_thread(self):
+        # Wywołujemy metodę ping_ip z klasy AddressPing
+        self.ping_instance.ping_ip()
+
+        # Aktualizujemy etykietę wyniku w interfejsie użytkownika w głównym wątku
+        Clock.schedule_once(self.update_result_label, 0)
+
+    def update_result_label(self, dt):
+        # Aktualizujemy etykietę wyniku w interfejsie użytkownika
+        self.result_label.text = self.ping_instance.result
+        
         
     def build(self):
+        self.ping_instance = ap.adress_ping()
+        self.theme_cls.theme_style_switch_animation = True
+        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.primary_palette = "Teal"
         return self.screen
-
+    
+    def switch_theme_style(self):
+        self.theme_cls.primary_palette = (
+            "Teal" if self.theme_cls.primary_palette == "Red" else "Red"
+        )
+        self.theme_cls.theme_style = (
+            "Dark" if self.theme_cls.theme_style == "Light" else "Light"
+        )
 
 if __name__ == '__main__':
     try:

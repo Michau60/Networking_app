@@ -14,17 +14,17 @@ MDScreen:
 				spacing: dp(10)
 				MDRaisedButton:
 					id: select_if_button
-					text: "Wybierz interfejs"
+					text: "Choose interface"
 					pos_hint: {"center_x": .5, "center_y": .5}
 					on_release: app.menu_if_names.open()
 				MDRaisedButton:
 					id: refresh_interval_button
-					text: "Wybierz częstotliwość odświeżania"
+					text: "Choose refresh interval"
 					pos_hint: {"center_x": .5, "center_y": .5}
 					on_release: app.menu_interval.open()
                 MDLabel:
 					id: selected_if_label 
-					text:"Brak wybranego interfejsu"
+					text:"No selected interface"
                     size_hint_y: None
                     halign: "center"
 				MDBoxLayout:
@@ -33,67 +33,67 @@ MDScreen:
 					MDBoxLayout:
 						orientation: "vertical"
 						MDLabel:
-							text: "Adres IP karty: "
+							text: "IP address: "
 						MDLabel:
-							text: "Adres MAC karty: "
+							text: "MAC address: "
 						MDLabel:
-							text: "Adres serwera DNS: "
+							text: "DNS address: "
 						MDLabel:
-							text: "Adres bramy: "
+							text: "Gateway address: "
                         MDLabel:
-							text: "Adres DHCP: "
+							text: "DHCP address: "
 						MDLabel:
-							text: "Maska podsieci: "
+							text: "Subnet mask: "
 						MDLabel:
-							text: "Pakiety wysłane"
+							text: "Packets sent"
 						MDLabel:
-							text: "Pakiety odebrane"
+							text: "Packet received"
 						MDLabel:
-							text: "Utracone pakiety wychodzące"
+							text: "Lost outgoing packets"
 						MDLabel:
-							text: "Utracone pakiety przychodzące"
+							text: "Lost incoming packets"
 						MDLabel:
-							text: "Aktualna prędkość wysyłania"
+							text: "Current upload speed"
 						MDLabel:
-							text: "Aktualna prędkość pobierania"  
+							text: "Cureent download speed"  
 					MDBoxLayout:
 						orientation: "vertical"
 						MDLabel:
                         	id:int_IP
-							text: "Brak danych"
+							text: "No data"
 						MDLabel:
                         	id:int_MAC
-							text: "Brak danych"
+							text: "No data"
 						MDLabel:
 							id:int_DNS
-							text: "Brak danych"
+							text: "No data"
 						MDLabel:
 							id:int_GW
-							text: "Brak danych"
+							text: "No data"
                         MDLabel:
                             id:int_DHCP
-							text: "Brak danych"
+							text: "No data"
 						MDLabel:
                             id:int_sub_mask
-							text: "Brak danych"
+							text: "No data"
 						MDLabel:
 							id:int_SNT
-							text: "Brak danych"
+							text: "No data"
 						MDLabel:
 							id:int_RCV
-							text: "Brak danych"
+							text: "No data"
 						MDLabel:
 							id:int_LST_out
-							text: "Brak danych"
+							text: "No data"
 						MDLabel:
 							id:int_LST_in
-							text: "Brak danych"
+							text: "No data"
 						MDLabel:
 							id:int_speed_out
-							text: "Brak danych"
+							text: "No data"
 						MDLabel:
 							id:int_speed_in
-							text: "Brak danych"
+							text: "No data"
 				
 
 		 
@@ -105,8 +105,8 @@ MDScreen:
         		orientation: 'vertical'
 				spacing: dp(10)
 				MDTextField:
-					id: ip_address_input
-					on_text: app.check_ip_format(self.text)
+					id: port_ip_address_input
+					on_text: app.check_ip_format(self.text,'port_ip_address_input')
 					hint_text: "Enter IP Address"
 					helper_text: "e.g., 192.168.1.1"
 					helper_text_mode: "on_focus"
@@ -137,8 +137,8 @@ MDScreen:
 				MDRaisedButton:
 					text: "Scan Ports"
 					pos_hint: {'center_x': 0.5}
-					on_release: app.port_scan(ip_address_input.text,port_start_input.text,port_stop_input.text)
-					disabled: app.is_port_button_disabled(ip_address_input.text, port_start_input.text, port_stop_input.text)
+					on_release: app.port_scan(port_ip_address_input.text,port_start_input.text,port_stop_input.text)
+					disabled: app.is_port_button_disabled(port_ip_address_input.text, port_start_input.text, port_stop_input.text)
 				MDRaisedButton:
 					id: select_port_filter_button
 					text: "Show open ports"
@@ -206,28 +206,82 @@ MDScreen:
 					on_release: app.scan_network(network_address_input.text)
 					disabled: app.is_discover_button_disabled(network_address_input.text)
 				ScrollView:
-					MDList:
-						id: device_list
+					BoxLayout:
+						id: result_layout_scan
+						orientation: 'vertical'
+						size_hint_y: None
+						height: self.minimum_height
+						MDList:
+							id: device_list
 		MDBottomNavigationItem: #pingowanie
 			name: 'screen 6' 
 			text: 'Ping' 
-			icon: 'test-tube' 
+			icon: 'web-clock' 
+			BoxLayout:
+        		orientation: 'vertical'
+				spacing: dp(10)
+				padding: dp(10)
+				MDTextField:
+					id: ping_ip_address_input
+					on_text: app.check_ip_format(self.text,'ping_ip_address_input')
+					hint_text: "Enter IP Address"
+					helper_text: "e.g., 192.168.1.1"
+					helper_text_mode: "on_focus"
+					pos_hint: {'center_x': 0.5}
+					size_hint_x: None
+					width: 300
+					padding: [10, 10]
+				MDTextField:
+					id: ping_count_input
+					input_filter: 'int'
+					hint_text: "Enter number of pings"
+					helper_text: "e.g., 10"
+					helper_text_mode: "on_focus"
+					pos_hint: {'center_x': 0.5}
+					size_hint_x: None
+					width: 300
+					padding: [10, 10]
+				MDRaisedButton:
+					text: "Ping"
+					pos_hint: {'center_x': 0.5}
+					disabled: app.is_ping_button_disabled(ping_ip_address_input.text,ping_count_input.text)
+				ScrollView:
+					BoxLayout:
+						id: ping_result_layout
+						orientation: 'vertical'
+						size_hint_y: None
+						height: self.minimum_height
 
-			# this will be triggered when screen 3 is selected 
-			# creates a label 
-			MDLabel: 
-				text: 'Test' 
-				halign: 'center'
 		MDBottomNavigationItem: #traceroute
 			name: 'screen 7' 
 			text: 'Traceroute' 
-			icon: 'test-tube' 
+			icon: 'routes' 
 
-			# this will be triggered when screen 3 is selected 
-			# creates a label 
-			MDLabel: 
-				text: 'Test' 
-				halign: 'center'
+			BoxLayout:
+        		orientation: 'vertical'
+				spacing: dp(10)
+				padding: dp(10)
+				MDTextField:
+					id: ip_address_input
+					on_text: app.check_ip_format(self.text)
+					hint_text: "Enter IP Address"
+					helper_text: "e.g., 192.168.1.1"
+					helper_text_mode: "on_focus"
+					pos_hint: {'center_x': 0.5}
+					size_hint_x: None
+					width: 300
+					padding: [10, 10]
+				MDRaisedButton:
+					text: "Traceroute"
+					pos_hint: {'center_x': 0.5}
+				ScrollView:
+					BoxLayout:
+						id: result_layout_ping
+						orientation: 'vertical'
+						size_hint_y: None
+						height: self.minimum_height
+						MDList:
+							id: traceroute_list
 		MDBottomNavigationItem: #iperf
 			name: 'screen 8' 
 			text: 'IPerf' 
@@ -236,22 +290,35 @@ MDScreen:
 			# this will be triggered when screen 3 is selected 
 			# creates a label 
 			MDLabel: 
-				text: 'Test' 
+				text: 'TEST' 
 				halign: 'center'
 		MDBottomNavigationItem: 
 			name: 'screen 9' 
-			text: 'Test' 
-			icon: 'test-tube'  
+			text: 'DoS Attack' 
+			icon: 'close-network'  
 			MDLabel: 
 				text: 'Test' 
 				halign: 'center'
 		MDBottomNavigationItem: #ustawienia
-			name: 'screen 4' 
+			name: 'screen 10' 
 			text: 'Settings' 
 			icon: 'wrench-cog-outline' 
+			MDCard:
+				orientation: "vertical"
+				padding: 0, 0, 0 , "36dp"
+				size_hint: .5, .5
+				pos_hint: {"center_x": .5, "center_y": .5}
+				elevation: 2
+				shadow_offset: 0, -2
 
-			# this will be triggered when screen 3 is selected 
-			# creates a label 
-			MDLabel: 
-				text: 'SETTINGS' 
-				halign: 'center'
+				MDLabel:
+					text: "Theme style - {}".format(app.theme_cls.theme_style)
+					halign: "center"
+					valign: "center"
+					bold: True
+					font_style: "H5"
+
+				MDRaisedButton:
+					text: "Set theme"
+					on_release: app.switch_theme_style()
+					pos_hint: {"center_x": .5}
