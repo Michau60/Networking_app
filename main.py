@@ -194,18 +194,14 @@ class Test(MDApp):
     
     
     def is_ping_button_disabled(self, ip_address,count):
-        print(f"IP Address: {ip_address}")
         if not ip_address:
-            print("IP Address is empty. Button disabled.")
             return True
 
         # Sprawdzanie czy adres IP jest poprawny
         if self.root.ids.ping_ip_address_input.error == False and count and count.isdigit() and int(count)>0:
-            print("IP Address is valid. Button enabled.")
             return False
 
         # Jeśli żaden z powyższych warunków nie jest spełniony, przycisk jest zablokowany
-        print("Button disabled.")
         return True    
     
     
@@ -264,14 +260,11 @@ class Test(MDApp):
         if ip_pattern.match(text):
             ip_address_input.error = False
             ip_address_input.helper_text=""
-            print("match")
-            print(ip_address_input.error)
         else:
             ip_address_input.error = True
             ip_address_input.helper_text_mode = "persistent"
             ip_address_input.helper_text = "Invalid IP Address"
-            print(ip_address_input.error)
-            print("nomatch")  
+
 
     def check_network_format(self, text):
         ip_pattern = re.compile(
@@ -313,27 +306,28 @@ class Test(MDApp):
     def network_scan_thread(self, network,callback):
         scan_results = NetworkDiscover.NetworkScanner.scan_network(network)
         Clock.schedule_once(lambda dt: callback(scan_results))
-    
-    def start_ping_thread(self, ip_address, number_ping):
-        # Ustawiamy adres IP i liczbę pingów w instancji klasy AddressPing
-        self.ping_instance.ip_address = ip_address
-        self.ping_instance.number_ping = number_ping
-
+        
+    def start_ping_thread(self,ip_addr,num_ping):
+        ping_list = self.root.ids.ping_result_layout
+        ping_list.clear_widgets()
         # Uruchamiamy wątek do pingowania
-        ping_thread = Thread(target=self.ping_thread)
+        ping_thread = Thread(target=self.ping_thread, args=(ip_addr,num_ping))
         ping_thread.start()
 
-    def ping_thread(self):
+    def ping_thread(self, ip_addr, ping_num):
+        # Funkcja zwrotna dla wyników pinga
+        def update_callback(result):
+            # Aktualizuj wynik w interfejsie użytkownika w głównym wątku
+            Clock.schedule_once(lambda dt, r=result: self.update_ping_list(r), 0)
+
         # Wywołujemy metodę ping_ip z klasy AddressPing
-        self.ping_instance.ping_ip()
+        self.ping_instance.ping_ip(ip_addr, ping_num, update_callback)
 
-        # Aktualizujemy etykietę wyniku w interfejsie użytkownika w głównym wątku
-        Clock.schedule_once(self.update_result_label, 0)
-
-    def update_result_label(self, dt):
-        # Aktualizujemy etykietę wyniku w interfejsie użytkownika
-        self.result_label.text = self.ping_instance.result
-        
+    def update_ping_list(self, result):
+        # Dodaj wynik pinga do listy w interfejsie użytkownika
+        ping_list = self.root.ids.ping_result_layout
+        new_label = MDLabel(text=result)
+        ping_list.add_widget(new_label)   
         
     def build(self):
         self.ping_instance = ap.adress_ping()

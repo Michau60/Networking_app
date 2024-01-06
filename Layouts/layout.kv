@@ -244,11 +244,13 @@ MDScreen:
 				MDRaisedButton:
 					text: "Ping"
 					pos_hint: {'center_x': 0.5}
+					on_release: app.start_ping_thread(ping_ip_address_input.text,ping_count_input.text)
 					disabled: app.is_ping_button_disabled(ping_ip_address_input.text,ping_count_input.text)
 				ScrollView:
 					BoxLayout:
 						id: ping_result_layout
 						orientation: 'vertical'
+						spacing: dp(30)
 						size_hint_y: None
 						height: self.minimum_height
 
