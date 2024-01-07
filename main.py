@@ -17,6 +17,8 @@ import domain_lookup
 import NetworkDiscover
 import os,sys
 import adress_ping as ap
+import traceroute_adress as ta
+import public_ip as pi
 class Test(MDApp):
     selected_IF = ""
     auto_refresh_interval = 0 # Co ile sekund ma odświeżać dane
@@ -28,6 +30,8 @@ class Test(MDApp):
         except Exception:
             base_path = os.path.abspath('.')
         return os.path.join(base_path,relative_path)
+    
+    
     def __init__(self, **kwargs):
         super(Test, self).__init__(**kwargs)
         self.screen = Builder.load_file("./Layouts/layout.kv") #załadowanie interfejsu z pliku
@@ -180,57 +184,6 @@ class Test(MDApp):
                 self.root.ids.result_layout.add_widget(label)     
     
     
-    def is_port_button_disabled(self, ip_address, port_start, port_stop):
-    # Sprawdzanie czy pola są puste
-        if not ip_address or not port_start or not port_stop:
-            return True
-
-        # Sprawdzanie czy adres IP jest poprawny
-        if not self.root.ids.port_ip_address_input.error:
-            return False
-
-        # Jeśli żaden z powyższych warunków nie jest spełniony, przycisk jest zablokowany
-        return True 
-    
-    
-    def is_ping_button_disabled(self, ip_address,count):
-        if not ip_address:
-            return True
-
-        # Sprawdzanie czy adres IP jest poprawny
-        if self.root.ids.ping_ip_address_input.error == False and count and count.isdigit() and int(count)>0:
-            return False
-
-        # Jeśli żaden z powyższych warunków nie jest spełniony, przycisk jest zablokowany
-        return True    
-    
-    
-    def is_discover_button_disabled(self, ip_address):
-    # Sprawdzanie czy pola są puste
-        if not ip_address:
-            return True
-
-        # Sprawdzanie czy adres IP jest poprawny
-        if not self.root.ids.network_address_input.error:
-            return False
-
-        # Jeśli żaden z powyższych warunków nie jest spełniony, przycisk jest zablokowany
-        return True 
-    
-    
-    def is_lookup_button_disabled(self,domain_address):
-    # Sprawdzanie czy pola są puste
-        if not domain_address:
-            return True
-
-        # Sprawdzanie czy adres domeny jest poprawny
-        if not self.root.ids.ip_address_input.error:
-            return False
-
-        # Jeśli żaden z powyższych warunków nie jest spełniony, przycisk jest zablokowany
-        return True  
-    
-    
     def domain_info(self, domain):
         self.root.ids.dns_result_layout.clear_widgets()
         domain_info = domain_lookup.domain_info.get_domain_info(domain)
@@ -244,9 +197,11 @@ class Test(MDApp):
         domain_pattern = re.compile(r'^(?!:\/\/)([a-zA-Z0-9](?:[a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$')
         if domain_pattern.match(text):
             self.root.ids.domain_address_input.error = False
+            self.root.ids.lookup_button.disabled = False
         else:
             self.root.ids.domain_address_input.error = True
             self.root.ids.domain_address_input.helper_text = "Invalid domain Address"
+            self.root.ids.lookup_button.disabled = True
     
            
     def check_ip_format(self,text,field_id): #sprawdzanie poprawnosci wpisanego adresu ip
@@ -264,6 +219,17 @@ class Test(MDApp):
             ip_address_input.error = True
             ip_address_input.helper_text_mode = "persistent"
             ip_address_input.helper_text = "Invalid IP Address"
+            self.root.ids.scan_port_button.disabled = True
+
+
+    def check_ports_input(self,text):
+        port_start_input = self.root.ids.port_start_input
+        port_stop_input = self.root.ids.port_stop_input
+        ip_address_input = self.root.ids.port_ip_address_input
+        if port_start_input.text !='' and port_stop_input.text!='' and ip_address_input.text!='':
+            self.root.ids.scan_port_button.disabled = False
+        else:
+            self.root.ids.scan_port_button.disabled = True
 
 
     def check_network_format(self, text):
@@ -280,11 +246,29 @@ class Test(MDApp):
         if ip_pattern.match(text):
             network_input.error = False
             network_input.helper_text = ""
-            
+            self.root.ids.scan_port_button.disabled = False
         else:
             network_input.error = True
             network_input.helper_text_mode = "persistent"
             network_input.helper_text = "Invalid network address or mask"
+            self.root.ids.scan_port_button.disabled = True
+    
+    
+    def check_domain_format(self, text):
+        ip_address_traceroute_input = self.root.ids.traceroute_address_input
+
+        domain_pattern = re.compile(
+            r'^(?:(?!-)[A-Za-z0-9-]{1,63}(?<!-)\.?)+[A-Za-z]{2,}\.[A-Za-z]{2,}$'
+        )
+
+        if domain_pattern.match(text):
+            ip_address_traceroute_input.error = False
+            ip_address_traceroute_input.helper_text = ""
+            self.root.ids.traceroute_button.disabled = False
+        else:
+            ip_address_traceroute_input.error = True
+            ip_address_traceroute_input.helper_text = "Invalid Domain Name"
+            self.root.ids.traceroute_button.disabled = True
     
       
     def scan_network(self, network):
@@ -302,10 +286,16 @@ class Test(MDApp):
                                 
         t = Thread(target=lambda: self.network_scan_thread(network, callback))
         t.start()
+        
+    
+    def get_public_ip(self):
+        ip_addr=pi.get_public_ip_from_html()
+        self.root.ids.public_ip_label.text = "Your public ip address is: " + ip_addr 
 
     def network_scan_thread(self, network,callback):
         scan_results = NetworkDiscover.NetworkScanner.scan_network(network)
         Clock.schedule_once(lambda dt: callback(scan_results))
+        
         
     def start_ping_thread(self,ip_addr,num_ping):
         ping_list = self.root.ids.ping_result_layout
@@ -313,6 +303,7 @@ class Test(MDApp):
         # Uruchamiamy wątek do pingowania
         ping_thread = Thread(target=self.ping_thread, args=(ip_addr,num_ping))
         ping_thread.start()
+
 
     def ping_thread(self, ip_addr, ping_num):
         # Funkcja zwrotna dla wyników pinga
@@ -323,11 +314,36 @@ class Test(MDApp):
         # Wywołujemy metodę ping_ip z klasy AddressPing
         self.ping_instance.ping_ip(ip_addr, ping_num, update_callback)
 
+
     def update_ping_list(self, result):
         # Dodaj wynik pinga do listy w interfejsie użytkownika
         ping_list = self.root.ids.ping_result_layout
         new_label = MDLabel(text=result)
         ping_list.add_widget(new_label)   
+    
+    
+    def start_traceroute_thread(self, address):
+        traceroute_list = self.root.ids.result_layout_traceroute
+        traceroute_list.clear_widgets()
+
+        # Przekazanie adresu jako krotki
+        traceroute_thread = Thread(target=self.traceroute_thread, args=(address,))
+        traceroute_thread.start()
+
+
+    def traceroute_thread(self, ip_addr):
+        def update_callback(result):
+            Clock.schedule_once(lambda dt, r=result: self.update_traceroute_list(r), 0)
+
+        # Zamiana na AddressTraceroute
+        ta.AddressTraceroute.traceroute(ip_addr, update_callback)
+
+
+    def update_traceroute_list(self, result):
+        traceroute_list = self.root.ids.result_layout_traceroute
+        new_label = MDLabel(text=result)
+        traceroute_list.add_widget(new_label)
+    
         
     def build(self):
         self.ping_instance = ap.adress_ping()
@@ -336,6 +352,7 @@ class Test(MDApp):
         self.theme_cls.primary_palette = "Teal"
         return self.screen
     
+    
     def switch_theme_style(self):
         self.theme_cls.primary_palette = (
             "Teal" if self.theme_cls.primary_palette == "Red" else "Red"
@@ -343,6 +360,7 @@ class Test(MDApp):
         self.theme_cls.theme_style = (
             "Dark" if self.theme_cls.theme_style == "Light" else "Light"
         )
+
 
 if __name__ == '__main__':
     try:

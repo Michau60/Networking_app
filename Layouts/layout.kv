@@ -116,6 +116,7 @@ MDScreen:
 					padding: [10, 10]
 				MDTextField:
 					id: port_start_input
+					on_text: app.check_ports_input(self.text)
 					input_filter: 'int'
 					hint_text: "Enter start port"
 					helper_text: "e.g., 22"
@@ -126,6 +127,7 @@ MDScreen:
 					padding: [10, 10]
 				MDTextField:
 					id: port_stop_input
+					on_text: app.check_ports_input(self.text)
 					input_filter: 'int'
 					hint_text: "Enter end port"
 					helper_text: "e.g., 80"
@@ -135,10 +137,11 @@ MDScreen:
 					width: 300
 					padding: [10, 10]
 				MDRaisedButton:
+					id:scan_port_button
 					text: "Scan Ports"
 					pos_hint: {'center_x': 0.5}
 					on_release: app.port_scan(port_ip_address_input.text,port_start_input.text,port_stop_input.text)
-					disabled: app.is_port_button_disabled(port_ip_address_input.text, port_start_input.text, port_stop_input.text)
+					disabled: True
 				MDRaisedButton:
 					id: select_port_filter_button
 					text: "Show open ports"
@@ -170,10 +173,11 @@ MDScreen:
 					size_hint_x: None
 					width: 300
 				MDRaisedButton:
+					id:lookup_button
 					text: "Lookup"
 					pos_hint: {'center_x': 0.5}
 					on_release: app.domain_info(domain_address_input.text)
-					disabled: app.is_lookup_button_disabled(domain_address_input.text)
+					disabled: True
 				ScrollView:
 					BoxLayout:
 						id: dns_result_layout
@@ -204,7 +208,7 @@ MDScreen:
 					text: "Scan Network"
 					pos_hint: {'center_x': 0.5}
 					on_release: app.scan_network(network_address_input.text)
-					disabled: app.is_discover_button_disabled(network_address_input.text)
+					disabled: True
 				ScrollView:
 					BoxLayout:
 						id: result_layout_scan
@@ -245,7 +249,7 @@ MDScreen:
 					text: "Ping"
 					pos_hint: {'center_x': 0.5}
 					on_release: app.start_ping_thread(ping_ip_address_input.text,ping_count_input.text)
-					disabled: app.is_ping_button_disabled(ping_ip_address_input.text,ping_count_input.text)
+					disabled: True
 				ScrollView:
 					BoxLayout:
 						id: ping_result_layout
@@ -264,36 +268,52 @@ MDScreen:
 				spacing: dp(10)
 				padding: dp(10)
 				MDTextField:
-					id: ip_address_input
-					on_text: app.check_ip_format(self.text)
-					hint_text: "Enter IP Address"
-					helper_text: "e.g., 192.168.1.1"
+					id: traceroute_address_input
+					on_text: app.check_domain_format(self.text)
+					hint_text: "Enter domain"
+					helper_text: "e.g., example.com"
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
 					width: 300
 					padding: [10, 10]
 				MDRaisedButton:
+					id:traceroute_button
 					text: "Traceroute"
+					on_release: app.start_traceroute_thread(traceroute_address_input.text)
+					disabled: True
 					pos_hint: {'center_x': 0.5}
 				ScrollView:
 					BoxLayout:
-						id: result_layout_ping
+						id: result_layout_traceroute
+						spacing: dp(30)
+						padding: dp(30)
 						orientation: 'vertical'
 						size_hint_y: None
 						height: self.minimum_height
-						MDList:
-							id: traceroute_list
-		MDBottomNavigationItem: #iperf
+		MDBottomNavigationItem: #public ip
 			name: 'screen 8' 
-			text: 'IPerf' 
+			text: 'Public IP' 
 			icon: 'test-tube' 
-
-			# this will be triggered when screen 3 is selected 
-			# creates a label 
-			MDLabel: 
-				text: 'TEST' 
-				halign: 'center'
+			BoxLayout:
+        		orientation: 'vertical'
+				spacing: dp(10)
+				padding: dp(10)
+				MDLabel:
+					id:public_ip_label 
+					text: 'Press button to check your public IP address' 
+					halign: 'center'
+				MDRaisedButton:
+					id:public_ip_button
+					text: "Check IP"
+					on_release: app.get_public_ip()
+					pos_hint: {'center_x': 0.5}
+				BoxLayout:
+					orientation: 'vertical'
+					size_hint_y: None
+					height: self.minimum_height
+					spacing: dp(30)
+					padding: dp(30)
 		MDBottomNavigationItem: 
 			name: 'screen 9' 
 			text: 'DoS Attack' 
