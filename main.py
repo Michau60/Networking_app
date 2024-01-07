@@ -378,6 +378,8 @@ class Test(MDApp):
     
         
     def build(self):
+        self.title = "Network APP"
+        self.icon = "icon.png"
         self.ping_instance = ap.adress_ping()
         self.theme_cls.theme_style_switch_animation = True
         self.theme_cls.theme_style = "Dark"
