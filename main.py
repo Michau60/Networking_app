@@ -34,8 +34,7 @@ class Test(MDApp):
     
     def __init__(self, **kwargs):
         super(Test, self).__init__(**kwargs)
-        self.screen = Builder.load_file("./Layouts/layout.kv") #załadowanie interfejsu z pliku
-        #self.screen = Builder.load_file(self.resource_path('Layouts/layout.kv'))
+        self.screen = Builder.load_file("./layout.kv") #załadowanie interfejsu z pliku
         int_names=inf_stat.interface_data.get_if_names()
         choose = ["Show open ports","Show all"]
         interfaces_menu_items = [
