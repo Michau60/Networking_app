@@ -1,25 +1,3 @@
-# import socket
-# class port_scan:
-#     def scan_ports(ip_address,start_port,stop_port):
-#         Port_list = []
-#         try:
-#             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-#             for port in range(int(start_port),int(stop_port)+1):  
-#                 result = sock.connect_ex((ip_address, port))
-#                 print (port)
-#                 print(result)
-#                 if result == 0:
-#                      Port_list.append("Port {}: 	 Open".format(port))
-#                 else:
-#                     Port_list.append("Port {}: 	 Closed".format(port))
-#             sock.close()
-#             return Port_list
-#         except socket.gaierror:
-#             return 'Hostname could not be resolved. Exiting'
-
-#         except socket.error:
-#             return "Couldn't connect to server"
-
 import socket
 from concurrent.futures import ThreadPoolExecutor
 

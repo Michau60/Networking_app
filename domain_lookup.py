@@ -10,5 +10,5 @@ class domain_info:
                 m_info =  whois.whois(domain) #domain info
                 print(m_info)
                 return m_info
-            except:
-                return f"{domain} is not registered"
+            except Exception as e:
+                return str(e)

@@ -2,8 +2,6 @@
 
 MDScreen: 
 	MDBottomNavigation: 
-
- 
 		MDBottomNavigationItem: #informacje o interfejsach
 			name: 'Interface information' 
 			text: 'Info' 
@@ -205,6 +203,7 @@ MDScreen:
 					size_hint_x: None
 					width: 300
 				MDRaisedButton:
+					id:scan_network_button
 					text: "Scan Network"
 					pos_hint: {'center_x': 0.5}
 					on_release: app.scan_network(network_address_input.text)
@@ -215,6 +214,8 @@ MDScreen:
 						orientation: 'vertical'
 						size_hint_y: None
 						height: self.minimum_height
+						spacing: dp(30)
+						padding: dp(30)
 						MDList:
 							id: device_list
 		MDBottomNavigationItem: #pingowanie
@@ -227,7 +228,7 @@ MDScreen:
 				padding: dp(10)
 				MDTextField:
 					id: ping_ip_address_input
-					on_text: app.check_ip_format(self.text,'ping_ip_address_input')
+					on_text: app.is_valid_ip_or_domain(self.text)
 					hint_text: "Enter IP Address"
 					helper_text: "e.g., 192.168.1.1"
 					helper_text_mode: "on_focus"
@@ -238,6 +239,7 @@ MDScreen:
 				MDTextField:
 					id: ping_count_input
 					input_filter: 'int'
+					text: "5"
 					hint_text: "Enter number of pings"
 					helper_text: "e.g., 10"
 					helper_text_mode: "on_focus"
@@ -246,6 +248,7 @@ MDScreen:
 					width: 300
 					padding: [10, 10]
 				MDRaisedButton:
+					id:ping_button
 					text: "Ping"
 					pos_hint: {'center_x': 0.5}
 					on_release: app.start_ping_thread(ping_ip_address_input.text,ping_count_input.text)
@@ -255,6 +258,7 @@ MDScreen:
 						id: ping_result_layout
 						orientation: 'vertical'
 						spacing: dp(30)
+						padding: dp(30)
 						size_hint_y: None
 						height: self.minimum_height
 
@@ -314,7 +318,7 @@ MDScreen:
 					height: self.minimum_height
 					spacing: dp(30)
 					padding: dp(30)
-		MDBottomNavigationItem: 
+		MDBottomNavigationItem: #syn flood
 			name: 'screen 9' 
 			text: 'DoS Attack' 
 			icon: 'close-network'  

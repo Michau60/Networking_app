@@ -34,7 +34,7 @@ class Test(MDApp):
     
     def __init__(self, **kwargs):
         super(Test, self).__init__(**kwargs)
-        self.screen = Builder.load_file("./layout.kv") #załadowanie interfejsu z pliku
+        self.screen = Builder.load_file("layout.kv") #załadowanie interfejsu z pliku
         int_names=inf_stat.interface_data.get_if_names()
         choose = ["Show open ports","Show all"]
         interfaces_menu_items = [
@@ -186,10 +186,15 @@ class Test(MDApp):
     def domain_info(self, domain):
         self.root.ids.dns_result_layout.clear_widgets()
         domain_info = domain_lookup.domain_info.get_domain_info(domain)
-        for key, value in domain_info.items():
-            label_text = f"{key}: {value}"
-            label = MDLabel(text=label_text, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
-            self.root.ids.dns_result_layout.add_widget(label)
+        try:
+            for key, value in domain_info.items():
+                label_text = f"{key}: {value}"
+                label = MDLabel(text=label_text, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+                self.root.ids.dns_result_layout.add_widget(label)
+        except Exception as e:
+                label_text = domain_info
+                label = MDLabel(text=label_text, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+                self.root.ids.dns_result_layout.add_widget(label)
    
     
     def is_valid_domain_name(self,text): #sprawdzanie poprawnosci nazwy domeny
@@ -197,6 +202,7 @@ class Test(MDApp):
         if domain_pattern.match(text):
             self.root.ids.domain_address_input.error = False
             self.root.ids.lookup_button.disabled = False
+            self.root.ids.domain_address_input.helper_text = ""
         else:
             self.root.ids.domain_address_input.error = True
             self.root.ids.domain_address_input.helper_text = "Invalid domain Address"
@@ -219,6 +225,7 @@ class Test(MDApp):
             ip_address_input.helper_text_mode = "persistent"
             ip_address_input.helper_text = "Invalid IP Address"
             self.root.ids.scan_port_button.disabled = True
+            
 
 
     def check_ports_input(self,text):
@@ -245,12 +252,12 @@ class Test(MDApp):
         if ip_pattern.match(text):
             network_input.error = False
             network_input.helper_text = ""
-            self.root.ids.scan_port_button.disabled = False
+            self.root.ids.scan_network_button.disabled = False
         else:
             network_input.error = True
             network_input.helper_text_mode = "persistent"
             network_input.helper_text = "Invalid network address or mask"
-            self.root.ids.scan_port_button.disabled = True
+            self.root.ids.scan_network_button.disabled = True
     
     
     def check_domain_format(self, text):
@@ -285,6 +292,32 @@ class Test(MDApp):
                                 
         t = Thread(target=lambda: self.network_scan_thread(network, callback))
         t.start()
+    
+    
+    def is_valid_ip_or_domain(self,input_text):
+        # Wyrażenie regularne dla poprawnego adresu IP
+        ip_pattern = re.compile(
+            r'^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
+            r'(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
+            r'(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
+            r'(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$'
+        )
+
+        # Wyrażenie regularne dla poprawnej nazwy domeny z końcówką
+        domain_pattern = re.compile(
+            r'^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z]{2,})+$'
+        )
+
+        # Sprawdź, czy to jest poprawny adres IP
+        if ip_pattern.match(input_text):
+            self.root.ids.ping_button.disabled = False
+
+        # Sprawdź, czy to jest poprawna nazwa domeny z końcówką
+        if domain_pattern.match(input_text):
+            self.root.ids.ping_button.disabled = False
+
+        return True
+    
         
     
     def get_public_ip(self):
