@@ -155,3 +155,4 @@ output
 /main.build
 nuitka-crash-report.xml
 main.dist
+Networking_app.zip

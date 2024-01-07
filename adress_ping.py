@@ -9,7 +9,8 @@ class adress_ping:
                 ['ping', '-n', str(ping_num), '-w', '1000', ip_addr],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
 
             while True:

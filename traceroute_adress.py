@@ -8,7 +8,8 @@ class AddressTraceroute:
                 ['tracert', '-d', ip_addr],
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
-                text=True
+                text=True,
+                creationflags=subprocess.CREATE_NO_WINDOW
             )
 
             while True:
