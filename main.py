@@ -19,10 +19,14 @@ import os,sys
 import adress_ping as ap
 import traceroute_adress as ta
 import public_ip as pi
-class Test(MDApp):
+import glob
+from network_syn_attack import DosAttackThread
+from network_ping_of_death import PingOfDeathAttackThread
+class Network_app(MDApp):
     selected_IF = ""
     auto_refresh_interval = 0 # Co ile sekund ma odświeżać dane
     selected_port_filter = "Show open ports"
+    selected_attack = "Syn attack"
     @staticmethod
     def resource_path(relative_path):
         try:
@@ -33,8 +37,22 @@ class Test(MDApp):
     
     
     def __init__(self, **kwargs):
-        super(Test, self).__init__(**kwargs)
-        self.screen = Builder.load_file("layout.kv") #załadowanie interfejsu z pliku
+        super(Network_app, self).__init__(**kwargs)
+        pattern = os.path.join(os.environ['LOCALAPPDATA'], 'Temp', 'onefile_*')
+        matching_folders = glob.glob(pattern)
+        print(matching_folders)
+        if matching_folders:
+            # Wybierz pierwszy pasujący folder (lub inny, jeśli jest więcej niż jeden)
+            selected_folder = matching_folders[0]
+            kv_file_path = os.path.join(selected_folder, 'layout.kv')
+
+            # Załaduj plik .kv
+            self.screen = Builder.load_file(kv_file_path)
+        else:
+            print("Nie znaleziono pasującego folderu TEMP używam lokalnego.")
+            current_folder = os.getcwd()
+            kv_file_path = os.path.join(current_folder, 'layout.kv')
+            self.screen = Builder.load_file('./layout.kv') #załadowanie interfejsu z pliku
         int_names=inf_stat.interface_data.get_if_names()
         choose = ["Show open ports","Show all"]
         interfaces_menu_items = [
@@ -60,6 +78,7 @@ class Test(MDApp):
                 "on_release": lambda x=f"{i}": self.port_menu_callback(x),
             } for i in choose
         ]
+    
         
         self.menu_if_names = MDDropdownMenu(
             caller=self.screen.ids.select_if_button,
@@ -81,6 +100,7 @@ class Test(MDApp):
         self.port_view_menu.text = "Show open ports"
         self.auto_refresh_event = None  # Zmienna przechowująca zdarzenie zegara
         self.auto_refresh_interval = 1
+        
     
     
     def start_auto_refresh(self): #włączanie automatycznego odświeżania danych
@@ -108,7 +128,7 @@ class Test(MDApp):
 
 
     def interfaces_menu_callback(self, text_item): #menu wyboru dostępnych interfejsów
-        self.screen.ids.selected_if_label.text ="Aktualnie wybrany:" + text_item
+        self.screen.ids.selected_if_label.text ="Selected: " + text_item
         current_interface=text_item
         self.selected_IF = current_interface
         self.packet_data_get_info(current_interface)
@@ -129,7 +149,7 @@ class Test(MDApp):
         self.screen.ids.select_port_filter_button.text = text_item
         self.selected_port_filter = text_item
         self.port_view_menu.dismiss()
-
+        
 
     def get_if_info(self,inf): #pobieranie danych z wybranego interfejsu
         network_info = interface_info.int_info.get_network_info(inf)
@@ -318,11 +338,11 @@ class Test(MDApp):
 
         return True
     
-        
     
     def get_public_ip(self):
         ip_addr=pi.get_public_ip_from_html()
         self.root.ids.public_ip_label.text = "Your public ip address is: " + ip_addr 
+
 
     def network_scan_thread(self, network,callback):
         scan_results = NetworkDiscover.NetworkScanner.scan_network(network)
@@ -394,13 +414,52 @@ class Test(MDApp):
         self.theme_cls.theme_style = (
             "Dark" if self.theme_cls.theme_style == "Light" else "Light"
         )
+    
+    
+    def toggle_ping_of_death_attack(self):
+        target_ip = self.root.ids.pod_ip_address_input.text  # Zmień na właściwy adres docelowy
+        number_of_packets = self.root.ids.pod_count_input.text  # Zmień na odpowiednią liczbę pakietów
+
+        if not hasattr(self, 'ping_of_death_thread') or not self.ping_of_death_thread.running:
+            self.ping_of_death_thread = PingOfDeathAttackThread(app_instance=self, target_ip=target_ip, number=int(number_of_packets))
+            self.ping_of_death_thread.running = True
+            self.ping_of_death_thread.start()
+            self.root.ids.pod_button.text = "Attack in progress..."
+            self.root.ids.pod_button.disabled = True
+        else:
+            self.ping_of_death_thread.running = False
+            self.ping_of_death_thread.join()
+
+
+    def toggle_attack(self):
+        ip_addr = self.root.ids.flood_ip_address_input.text
+        port = self.root.ids.flood_port_input.text
+        if not hasattr(self, 'attack_thread') or not self.attack_thread.running:
+            self.attack_thread = DosAttackThread(app_instance=self, ip=ip_addr, port=int(port))
+            self.attack_thread.running = True
+            self.attack_thread.start()
+            self.root.ids.flood_button.text = 'Stop Attack'
+        else:
+            self.attack_thread.running = False
+            self.attack_thread.join()
+            self.root.ids.pod_button.text = 'Start Attack'
+
+
+    def on_attack_finished(self, *args):
+        self.root.ids.pod_button.text = 'Start Attack'
+        self.root.ids.pod_button.disabled = False
+
+    def update_syn_attack_result(self, result):
+        self.root.ids.packet_count_label.text = result
+    def update_pod_attack_result(self, result):
+        self.root.ids.packet_pod_count_label.text = result
 
 
 if __name__ == '__main__':
     try:
         if hasattr(sys, '_MEIPASS'):
             resource_add_path(os.path.join(sys._MEIPASS))
-        Test().run()
+        Network_app().run()
     except Exception as e:
         print(e)
         input("Press enter.")

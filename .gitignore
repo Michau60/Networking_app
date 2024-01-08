@@ -156,3 +156,12 @@ output
 nuitka-crash-report.xml
 main.dist
 Networking_app.zip
+main.exe
+main.onefile-build/.sconsign-310.dblite
+main.onefile-build/__payload.bin
+main.onefile-build/clcache-stats.24772.txt
+main.onefile-build/onefile_definitions.h
+main.onefile-build/scons-report.txt
+main.onefile-build/static_src/OnefileBootstrap.c
+main.onefile-build/static_src/OnefileBootstrap.obj
+main.onefile-build/clcache-stats.13716.txt

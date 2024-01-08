@@ -320,13 +320,92 @@ MDScreen:
 					padding: dp(30)
 		MDBottomNavigationItem: #syn flood
 			name: 'screen 9' 
-			text: 'DoS Attack' 
+			text: 'SYN Attack' 
 			icon: 'close-network'  
-			MDLabel: 
-				text: 'Test' 
-				halign: 'center'
-		MDBottomNavigationItem: #ustawienia
+			BoxLayout:
+				orientation:'vertical'
+				spacing: dp(10)
+				padding: dp(10)
+				MDTextField:
+					id: flood_ip_address_input
+					on_text: app.check_ip_format(self.text,'flood_ip_address_input')
+					hint_text: "Enter IP Address"
+					helper_text: "e.g., 192.168.1.1"
+					helper_text_mode: "on_focus"
+					pos_hint: {'center_x': 0.5}
+					size_hint_x: None
+					width: 300
+					padding: [10, 10]
+				MDTextField:
+					id: flood_port_input
+					input_filter: 'int'
+					hint_text: "Enter port number"
+					helper_text: "e.g., 80"
+					helper_text_mode: "on_focus"
+					pos_hint: {'center_x': 0.5}
+					size_hint_x: None
+					width: 300
+					padding: [10, 10]
+				MDRaisedButton:
+					id:flood_button
+					text: "Start attack"
+					on_release: app.toggle_attack()
+					pos_hint: {'center_x': 0.5}
+				ScrollView:
+					BoxLayout:
+						id: result_layout_flood
+						spacing: dp(30)
+						padding: dp(30)
+						orientation: 'vertical'
+						size_hint_y: None
+						height: self.minimum_height
+						MDLabel:
+							id:packet_count_label
+		MDBottomNavigationItem: #Ping of death
 			name: 'screen 10' 
+			text: 'PoD Attack' 
+			icon: 'close-network'  
+			BoxLayout:
+				orientation:'vertical'
+				spacing: dp(10)
+				padding: dp(10)
+				MDTextField:
+					id: pod_ip_address_input
+					on_text: app.check_ip_format(self.text,'pod_ip_address_input')
+					hint_text: "Enter IP Address"
+					helper_text: "e.g., 192.168.1.1"
+					helper_text_mode: "on_focus"
+					pos_hint: {'center_x': 0.5}
+					size_hint_x: None
+					width: 300
+					padding: [10, 10]
+				MDTextField:
+					id: pod_count_input
+					input_filter: 'int'
+					hint_text: "Enter number of pings"
+					helper_text: "e.g., 10"
+					helper_text_mode: "on_focus"
+					pos_hint: {'center_x': 0.5}
+					size_hint_x: None
+					width: 300
+					padding: [10, 10]
+				MDRaisedButton:
+					id:pod_button
+					text: "Start attack"
+					on_release: app.toggle_ping_of_death_attack()
+					pos_hint: {'center_x': 0.5}
+				ScrollView:
+					BoxLayout:
+						id: result_layout_pod
+						spacing: dp(30)
+						padding: dp(30)
+						orientation: 'vertical'
+						size_hint_y: None
+						height: self.minimum_height
+						MDLabel:
+							id:packet_pod_count_label
+		MDBottomNavigationItem: #ustawienia
+			name: 'screen 11' 
 			text: 'Settings' 
 			icon: 'wrench-cog-outline' 
 			MDCard:

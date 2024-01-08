@@ -1,5 +1,4 @@
 import wmi
-
 class int_info:
         
     def get_network_info(interface):
