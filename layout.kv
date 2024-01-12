@@ -1,28 +1,28 @@
 #:kivy 2.1
 
-MDScreen: 
+MDScreen:
 	MDBottomNavigation: 
 		MDBottomNavigationItem: #informacje o interfejsach
 			name: 'Interface information' 
 			text: 'Info' 
 			icon: 'ethernet' 
-			
+			spacing: dp(10)
 			MDBoxLayout:
 				orientation: "vertical"
 				spacing: dp(10)
 				MDRaisedButton:
 					id: select_if_button
-					text: "Choose interface"
+					text: app.translate("InterfaceInformation","ChooseInterfaceButton")
 					pos_hint: {"center_x": .5, "center_y": .5}
 					on_release: app.menu_if_names.open()
 				MDRaisedButton:
 					id: refresh_interval_button
-					text: "Choose refresh interval"
+					text: app.translate("InterfaceInformation","RefreshIntervalButton")
 					pos_hint: {"center_x": .5, "center_y": .5}
 					on_release: app.menu_interval.open()
                 MDLabel:
 					id: selected_if_label 
-					text:"No selected interface"
+					text: app.translate("InterfaceInformation","SelectedInterfaceLabel")
                     size_hint_y: None
                     halign: "center"
 				MDBoxLayout:
@@ -31,82 +31,82 @@ MDScreen:
 					MDBoxLayout:
 						orientation: "vertical"
 						MDLabel:
-							text: "IP address: "
+							text: app.translate("InterfaceInformation", "IPLabel")
 						MDLabel:
-							text: "MAC address: "
+							text: app.translate("InterfaceInformation", "MACLabel")
 						MDLabel:
-							text: "DNS address: "
+							text: app.translate("InterfaceInformation", "DNSLabel")
 						MDLabel:
-							text: "Gateway address: "
-                        MDLabel:
-							text: "DHCP address: "
+							text: app.translate("InterfaceInformation", "GatewayLabel")
 						MDLabel:
-							text: "Subnet mask: "
+							text: app.translate("InterfaceInformation", "DHCPLabel")
 						MDLabel:
-							text: "Packets sent"
+							text: app.translate("InterfaceInformation", "SubnetMaskLabel")
 						MDLabel:
-							text: "Packet received"
+							text: app.translate("InterfaceInformation", "PacketsSentLabel")
 						MDLabel:
-							text: "Lost outgoing packets"
+							text: app.translate("InterfaceInformation", "PacketReceivedLabel")
 						MDLabel:
-							text: "Lost incoming packets"
+							text: app.translate("InterfaceInformation", "LostOutgoingPacketsLabel")
 						MDLabel:
-							text: "Current upload speed"
+							text: app.translate("InterfaceInformation", "LostIncomingPacketsLabel")
 						MDLabel:
-							text: "Cureent download speed"  
+							text: app.translate("InterfaceInformation", "CurrentUploadSpeedLabel")
+						MDLabel:
+							text: app.translate("InterfaceInformation", "CurrentDownloadSpeedLabel")
 					MDBoxLayout:
 						orientation: "vertical"
 						MDLabel:
                         	id:int_IP
-							text: "No data"
+							text: app.translate("InterfaceInformation", "noData")
 						MDLabel:
                         	id:int_MAC
-							text: "No data"
+							text: app.translate("InterfaceInformation", "noData")
 						MDLabel:
 							id:int_DNS
-							text: "No data"
+							text: app.translate("InterfaceInformation", "noData")
 						MDLabel:
 							id:int_GW
-							text: "No data"
+							text: app.translate("InterfaceInformation", "noData")
                         MDLabel:
                             id:int_DHCP
-							text: "No data"
+							text: app.translate("InterfaceInformation", "noData")
 						MDLabel:
                             id:int_sub_mask
-							text: "No data"
+							text: app.translate("InterfaceInformation", "noData")
 						MDLabel:
 							id:int_SNT
-							text: "No data"
+							text: app.translate("InterfaceInformation", "noData")
 						MDLabel:
 							id:int_RCV
-							text: "No data"
+							text: app.translate("InterfaceInformation", "noData")
 						MDLabel:
 							id:int_LST_out
-							text: "No data"
+							text: app.translate("InterfaceInformation", "noData")
 						MDLabel:
 							id:int_LST_in
-							text: "No data"
+							text: app.translate("InterfaceInformation", "noData")
 						MDLabel:
 							id:int_speed_out
-							text: "No data"
+							text: app.translate("InterfaceInformation", "noData")
 						MDLabel:
 							id:int_speed_in
-							text: "No data"
-				
+							text: app.translate("InterfaceInformation", "noData")
 
 		 
 		MDBottomNavigationItem: #skaner portów
 			name: 'screen 2' 
 			text: 'Port Scanner' 
 			icon: 'tab-search'
+			spacing: dp(10)
 			BoxLayout:
         		orientation: 'vertical'
 				spacing: dp(10)
 				MDTextField:
 					id: port_ip_address_input
 					on_text: app.check_ip_format(self.text,'port_ip_address_input')
-					hint_text: "Enter IP Address"
-					helper_text: "e.g., 192.168.1.1"
+					hint_text: app.translate("PortScanner","IPAddressInputHint")
+					helper_text: app.translate("PortScanner","exampleTextIp")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -116,8 +116,8 @@ MDScreen:
 					id: port_start_input
 					on_text: app.check_ports_input(self.text)
 					input_filter: 'int'
-					hint_text: "Enter start port"
-					helper_text: "e.g., 22"
+					hint_text: app.translate("PortScanner","PortStartInputHint")
+					helper_text: app.translate("PortScanner","exampleTextPortStart")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -127,8 +127,8 @@ MDScreen:
 					id: port_stop_input
 					on_text: app.check_ports_input(self.text)
 					input_filter: 'int'
-					hint_text: "Enter end port"
-					helper_text: "e.g., 80"
+					hint_text: app.translate("PortScanner","PortStopInputHint")
+					helper_text: app.translate("PortScanner","exampleTextPortStop")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -136,13 +136,13 @@ MDScreen:
 					padding: [10, 10]
 				MDRaisedButton:
 					id:scan_port_button
-					text: "Scan Ports"
+					text: app.translate("PortScanner","ScanPortsButton")
 					pos_hint: {'center_x': 0.5}
 					on_release: app.port_scan(port_ip_address_input.text,port_start_input.text,port_stop_input.text)
 					disabled: True
 				MDRaisedButton:
 					id: select_port_filter_button
-					text: "Show open ports"
+					text: app.translate("StringsInCode","ShowOpenPorts")
 					pos_hint: {"center_x": .5, "center_y": .5}
 					on_release: app.port_view_menu.open()
 
@@ -157,22 +157,23 @@ MDScreen:
 		MDBottomNavigationItem: #DNS lookup
 			name: 'screen 3' 
 			text: 'WHOIS dns' 
-			icon: 'search-web' 
+			icon: 'search-web'
+			spacing: dp(10) 
 			BoxLayout:
 				orientation: "vertical"
 				spacing: dp(10)
 				MDTextField:
 					id: domain_address_input
 					on_text: app.is_valid_domain_name(self.text)
-					hint_text: "Enter domain Address"
-					helper_text: "e.g., example.com"
+					hint_text: app.translate("DNSLookup","DomainAddressInputHint")
+					helper_text: app.translate("DNSLookup","DnsHelperText")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
 					width: 300
 				MDRaisedButton:
 					id:lookup_button
-					text: "Lookup"
+					text: app.translate("DNSLookup","LookupButton")
 					pos_hint: {'center_x': 0.5}
 					on_release: app.domain_info(domain_address_input.text)
 					disabled: True
@@ -187,24 +188,26 @@ MDScreen:
 
 		MDBottomNavigationItem: #Urządzenia w sieci
 			name: 'screen 5' 
-			text: 'LAN devices' 
-			icon: 'help-network' 
+			text: app.translate("LANDevices","DevicesInLAN")
+			icon: 'help-network'
+			spacing: dp(30) 
+			padding: dp(30)
 			BoxLayout:
 				orientation: 'vertical'
 				spacing: dp(10)
-				padding: dp(10)
+				padding: dp(30)
 				MDTextField:
 					id: network_address_input
 					on_text: app.check_network_format(self.text)
-					hint_text: "Enter address (e.g., 192.168.1.0/24)"
-					helper_text: "e.g., 192.168.1.0/24"
+					hint_text: app.translate("LANDevices","NetworkAddressInputHint")
+					helper_text: app.translate("LANDevices","NetworkAdressHelper")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
 					width: 300
 				MDRaisedButton:
 					id:scan_network_button
-					text: "Scan Network"
+					text: app.translate("LANDevices","ScanNetworkButton")
 					pos_hint: {'center_x': 0.5}
 					on_release: app.scan_network(network_address_input.text)
 					disabled: True
@@ -221,7 +224,8 @@ MDScreen:
 		MDBottomNavigationItem: #pingowanie
 			name: 'screen 6' 
 			text: 'Ping' 
-			icon: 'web-clock' 
+			icon: 'web-clock'
+			spacing: dp(10) 
 			BoxLayout:
         		orientation: 'vertical'
 				spacing: dp(10)
@@ -229,8 +233,8 @@ MDScreen:
 				MDTextField:
 					id: ping_ip_address_input
 					on_text: app.is_valid_ip_or_domain(self.text)
-					hint_text: "Enter IP Address"
-					helper_text: "e.g., 192.168.1.1"
+					hint_text: app.translate("Ping","PingIPAddressInputHint")
+					helper_text: app.translate("Ping","PingIPAddressInputHint")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -240,8 +244,8 @@ MDScreen:
 					id: ping_count_input
 					input_filter: 'int'
 					text: "5"
-					hint_text: "Enter number of pings"
-					helper_text: "e.g., 10"
+					hint_text: app.translate("Ping","PingCountInputHint")
+					helper_text: app.translate("Ping","PingCountInputHelper")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -266,7 +270,7 @@ MDScreen:
 			name: 'screen 7' 
 			text: 'Traceroute' 
 			icon: 'routes' 
-
+			spacing: dp(10)
 			BoxLayout:
         		orientation: 'vertical'
 				spacing: dp(10)
@@ -274,8 +278,8 @@ MDScreen:
 				MDTextField:
 					id: traceroute_address_input
 					on_text: app.check_domain_format(self.text)
-					hint_text: "Enter domain"
-					helper_text: "e.g., example.com"
+					hint_text: app.translate("Traceroute","TracerouteAddressInputHint")
+					helper_text: app.translate("Traceroute","TracerouteAddressInputHelper")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -298,18 +302,19 @@ MDScreen:
 		MDBottomNavigationItem: #public ip
 			name: 'screen 8' 
 			text: 'Public IP' 
-			icon: 'test-tube' 
+			icon: 'test-tube'
+			spacing: dp(10) 
 			BoxLayout:
         		orientation: 'vertical'
 				spacing: dp(10)
 				padding: dp(10)
 				MDLabel:
 					id:public_ip_label 
-					text: 'Press button to check your public IP address' 
+					text: app.translate("PublicIP","publicIPText")
 					halign: 'center'
 				MDRaisedButton:
 					id:public_ip_button
-					text: "Check IP"
+					text: app.translate("PublicIP","CheckIPButton")
 					on_release: app.get_public_ip()
 					pos_hint: {'center_x': 0.5}
 				BoxLayout:
@@ -321,7 +326,8 @@ MDScreen:
 		MDBottomNavigationItem: #syn flood
 			name: 'screen 9' 
 			text: 'SYN Attack' 
-			icon: 'close-network'  
+			icon: 'close-network'
+			spacing: dp(10)  
 			BoxLayout:
 				orientation:'vertical'
 				spacing: dp(10)
@@ -329,8 +335,8 @@ MDScreen:
 				MDTextField:
 					id: flood_ip_address_input
 					on_text: app.check_ip_format(self.text,'flood_ip_address_input')
-					hint_text: "Enter IP Address"
-					helper_text: "e.g., 192.168.1.1"
+					hint_text: app.translate("SYNAttack","FloodIPAddressInputHint")
+					helper_text: app.translate("SYNAttack","FloodIPAddressInputHelper")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -339,8 +345,8 @@ MDScreen:
 				MDTextField:
 					id: flood_port_input
 					input_filter: 'int'
-					hint_text: "Enter port number"
-					helper_text: "e.g., 80"
+					hint_text: app.translate("SYNAttack","FloodPortInputHint")
+					helper_text: app.translate("SYNAttack","FloodPortInputHelper")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -348,7 +354,7 @@ MDScreen:
 					padding: [10, 10]
 				MDRaisedButton:
 					id:flood_button
-					text: "Start attack"
+					text: app.translate("SYNAttack","StartAttackButton")
 					on_release: app.toggle_attack()
 					pos_hint: {'center_x': 0.5}
 				ScrollView:
@@ -364,7 +370,8 @@ MDScreen:
 		MDBottomNavigationItem: #Ping of death
 			name: 'screen 10' 
 			text: 'PoD Attack' 
-			icon: 'close-network'  
+			icon: 'close-network'
+			spacing: dp(10)  
 			BoxLayout:
 				orientation:'vertical'
 				spacing: dp(10)
@@ -372,8 +379,8 @@ MDScreen:
 				MDTextField:
 					id: pod_ip_address_input
 					on_text: app.check_ip_format(self.text,'pod_ip_address_input')
-					hint_text: "Enter IP Address"
-					helper_text: "e.g., 192.168.1.1"
+					hint_text: app.translate("PingOfDeathAttack","PODIPAddressInputHint")
+					helper_text: app.translate("PingOfDeathAttack","PODIPAddressInputHelper")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -382,8 +389,8 @@ MDScreen:
 				MDTextField:
 					id: pod_count_input
 					input_filter: 'int'
-					hint_text: "Enter number of pings"
-					helper_text: "e.g., 10"
+					hint_text: app.translate("PingOfDeathAttack","PODCountInputHint")
+					helper_text: app.translate("PingOfDeathAttack","PODCountInputHelper")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -391,7 +398,7 @@ MDScreen:
 					padding: [10, 10]
 				MDRaisedButton:
 					id:pod_button
-					text: "Start attack"
+					text: app.translate("PingOfDeathAttack","StartAttackButton")
 					on_release: app.toggle_ping_of_death_attack()
 					pos_hint: {'center_x': 0.5}
 				ScrollView:
@@ -406,8 +413,9 @@ MDScreen:
 							id:packet_pod_count_label
 		MDBottomNavigationItem: #ustawienia
 			name: 'screen 11' 
-			text: 'Settings' 
-			icon: 'wrench-cog-outline' 
+			text: app.translate("Settings","SettingsName") 
+			icon: 'wrench-cog-outline'
+			spacing: dp(10) 
 			MDCard:
 				orientation: "vertical"
 				padding: 0, 0, 0 , "36dp"
@@ -417,13 +425,13 @@ MDScreen:
 				shadow_offset: 0, -2
 
 				MDLabel:
-					text: "Theme style - {}".format(app.theme_cls.theme_style)
+					text: app.translate("Settings","ThemeStyle").format(app.theme_cls.theme_style)
 					halign: "center"
 					valign: "center"
 					bold: True
 					font_style: "H5"
 
 				MDRaisedButton:
-					text: "Set theme"
+					text: app.translate("Settings","SetThemeButton")
 					on_release: app.switch_theme_style()
 					pos_hint: {"center_x": .5}

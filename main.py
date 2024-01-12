@@ -22,11 +22,13 @@ import public_ip as pi
 import glob
 from network_syn_attack import DosAttackThread
 from network_ping_of_death import PingOfDeathAttackThread
+import json
 class Network_app(MDApp):
     selected_IF = ""
     auto_refresh_interval = 0 # Co ile sekund ma odświeżać dane
     selected_port_filter = "Show open ports"
-    selected_attack = "Syn attack"
+    translations = {}
+    language = 'polish'
     @staticmethod
     def resource_path(relative_path):
         try:
@@ -38,6 +40,7 @@ class Network_app(MDApp):
     
     def __init__(self, **kwargs):
         super(Network_app, self).__init__(**kwargs)
+        self.load_translations("languages.json")
         pattern = os.path.join(os.environ['LOCALAPPDATA'], 'Temp', 'onefile_*')
         matching_folders = glob.glob(pattern)
         print(matching_folders)
@@ -54,7 +57,7 @@ class Network_app(MDApp):
             kv_file_path = os.path.join(current_folder, 'layout.kv')
             self.screen = Builder.load_file('./layout.kv') #załadowanie interfejsu z pliku
         int_names=inf_stat.interface_data.get_if_names()
-        choose = ["Show open ports","Show all"]
+        choose = [self.translate("choose","ShowOpenPorts"),self.translate("choose","ShowAll")]
         interfaces_menu_items = [
             {
                 "text": f"{i}",
@@ -97,10 +100,27 @@ class Network_app(MDApp):
             items = filter_menu_items,
             width_mult=4
         )
-        self.port_view_menu.text = "Show open ports"
+        self.port_view_menu.text = self.translate("StringsInCode","ShowOpenPorts")
         self.auto_refresh_event = None  # Zmienna przechowująca zdarzenie zegara
         self.auto_refresh_interval = 1
-        
+
+
+    def translate(self, section, key):
+        # Sprawdź, czy sekcja, klucz i aktualny język są dostępne
+        if (
+            self.language in self.translations
+            and section in self.translations[self.language]
+            and key in self.translations[self.language][section]
+        ):
+            return self.translations[self.language][section][key]
+        else:
+            # Jeśli tłumaczenie nie jest dostępne, zwróć oryginalny tekst
+            return key
+    
+
+    def load_translations(self, file_path):
+        with open(file_path, 'r', encoding='utf-8') as file:
+            self.translations = json.load(file)
     
     
     def start_auto_refresh(self): #włączanie automatycznego odświeżania danych
@@ -128,7 +148,7 @@ class Network_app(MDApp):
 
 
     def interfaces_menu_callback(self, text_item): #menu wyboru dostępnych interfejsów
-        self.screen.ids.selected_if_label.text ="Selected: " + text_item
+        self.screen.ids.selected_if_label.text =self.translate("StringsInCode","SelectedInterface") + text_item
         current_interface=text_item
         self.selected_IF = current_interface
         self.packet_data_get_info(current_interface)
@@ -177,7 +197,7 @@ class Network_app(MDApp):
           
     def port_scan(self, ip_addr, port_start, port_end):  # pobieranie danych o przeskanowanych portach oraz wyświetlanie wyników
         self.root.ids.result_layout.clear_widgets()
-        scanning_label = MDLabel(text="Skanowanie w toku...", theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+        scanning_label = MDLabel(text=self.translate("StringsInCode","ScanningInProgress"), theme_text_color="Secondary", size_hint_y=None, height=dp(40))
         self.root.ids.result_layout.add_widget(scanning_label)
 
         def callback(scan_results):
@@ -225,7 +245,7 @@ class Network_app(MDApp):
             self.root.ids.domain_address_input.helper_text = ""
         else:
             self.root.ids.domain_address_input.error = True
-            self.root.ids.domain_address_input.helper_text = "Invalid domain Address"
+            self.root.ids.domain_address_input.helper_text = self.translate("StringsInCode","InvalidDomainAddress")
             self.root.ids.lookup_button.disabled = True
     
            
@@ -243,7 +263,7 @@ class Network_app(MDApp):
         else:
             ip_address_input.error = True
             ip_address_input.helper_text_mode = "persistent"
-            ip_address_input.helper_text = "Invalid IP Address"
+            ip_address_input.helper_text = self.translate("StringsInCode","InvalidIPAddress")
             self.root.ids.scan_port_button.disabled = True
             
 
@@ -276,7 +296,7 @@ class Network_app(MDApp):
         else:
             network_input.error = True
             network_input.helper_text_mode = "persistent"
-            network_input.helper_text = "Invalid network address or mask"
+            network_input.helper_text = self.translate("StringsInCode","InvalidNetworkAddressOrMask")
             self.root.ids.scan_network_button.disabled = True
     
     
@@ -293,20 +313,20 @@ class Network_app(MDApp):
             self.root.ids.traceroute_button.disabled = False
         else:
             ip_address_traceroute_input.error = True
-            ip_address_traceroute_input.helper_text = "Invalid Domain Name"
+            ip_address_traceroute_input.helper_text =self.translate("StringsInCode","InvalidDomainAddress")
             self.root.ids.traceroute_button.disabled = True
     
       
     def scan_network(self, network):
         device_list = self.root.ids.device_list
         device_list.clear_widgets()
-        scanning_label = MDLabel(text="Skanowanie w toku...", theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+        scanning_label = MDLabel(text=self.translate("StringsInCode","ScanningInProgress"), theme_text_color="Secondary", size_hint_y=None, height=dp(40))
         self.root.ids.result_layout_scan.add_widget(scanning_label)
 
         def callback(scan_results):
             self.root.ids.result_layout_scan.remove_widget(scanning_label)
             for device in scan_results:
-                label_text = f"IP Address: {device['ip']}, Hostname: {device['hostname']}, MAC Address: {device['mac']}"
+                label_text = f"{self.translate('StringsInCode','scan_IP')} {device['ip']}, {self.translate('StringsInCode','scan_HOSTNAME')} {device['hostname']}, {self.translate('StringsInCode','scan_MAC_ADDR')} {device['mac']}"
                 label = MDLabel(text=label_text, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
                 device_list.add_widget(label)
                                 
@@ -341,7 +361,7 @@ class Network_app(MDApp):
     
     def get_public_ip(self):
         ip_addr=pi.get_public_ip_from_html()
-        self.root.ids.public_ip_label.text = "Your public ip address is: " + ip_addr 
+        self.root.ids.public_ip_label.text = self.translate("StringsInCode","PublicIPAddressLabel") + ip_addr 
 
 
     def network_scan_thread(self, network,callback):
@@ -424,7 +444,7 @@ class Network_app(MDApp):
             self.ping_of_death_thread = PingOfDeathAttackThread(app_instance=self, target_ip=target_ip, number=int(number_of_packets))
             self.ping_of_death_thread.running = True
             self.ping_of_death_thread.start()
-            self.root.ids.pod_button.text = "Attack in progress..."
+            self.root.ids.pod_button.text = self.translate("StringsInCode","AttackInProgress")
             self.root.ids.pod_button.disabled = True
         else:
             self.ping_of_death_thread.running = False
@@ -438,15 +458,15 @@ class Network_app(MDApp):
             self.attack_thread = DosAttackThread(app_instance=self, ip=ip_addr, port=int(port))
             self.attack_thread.running = True
             self.attack_thread.start()
-            self.root.ids.flood_button.text = 'Stop Attack'
+            self.root.ids.flood_button.text = self.translate("StringsInCode","StopAttack")
         else:
             self.attack_thread.running = False
             self.attack_thread.join()
-            self.root.ids.pod_button.text = 'Start Attack'
+            self.root.ids.pod_button.text = self.translate("StringsInCode","StartAttack")
 
 
     def on_attack_finished(self, *args):
-        self.root.ids.pod_button.text = 'Start Attack'
+        self.root.ids.pod_button.text = self.translate("StringsInCode","StartAttack")
         self.root.ids.pod_button.disabled = False
 
     def update_syn_attack_result(self, result):

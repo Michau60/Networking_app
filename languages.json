@@ -1,0 +1,199 @@
+{
+    "english": {
+      "choose": {
+        "ShowOpenPorts": "Show open ports",
+        "ShowAll": "Show all"
+      },
+      "InterfaceInformation": {
+        "ChooseInterfaceButton": "Choose interface",
+        "RefreshIntervalButton": "Choose refresh interval",
+        "SelectedInterfaceLabel": "No selected interface",
+        "IPLabel": "IP address: ",
+        "MACLabel": "MAC address: ",
+        "DNSLabel": "DNS address: ",
+        "GatewayLabel": "Gateway address: ",
+        "DHCPLabel": "DHCP address: ",
+        "SubnetMaskLabel": "Subnet mask: ",
+        "PacketsSentLabel": "Packets sent",
+        "PacketReceivedLabel": "Packet received",
+        "LostOutgoingPacketsLabel": "Lost outgoing packets",
+        "LostIncomingPacketsLabel": "Lost incoming packets",
+        "CurrentUploadSpeedLabel": "Current upload speed",
+        "CurrentDownloadSpeedLabel": "Current download speed",
+        "noData":"No data"
+      },
+      "PortScanner": {
+        "PortScannerName":"Port Scanner",
+        "IPAddressInputHint": "Enter IP Address",
+        "PortStartInputHint": "Enter start port",
+        "PortStopInputHint": "Enter end port",
+        "ScanPortsButton": "Scan Ports",
+        "SelectPortFilterButton": "Show open ports",
+        "exampleTextIp": "ex., 192.168.1.1",
+        "exampleTextPortStart":"ex. 22",
+        "exampleTextPortStop":"ex. 80"
+
+      },
+      "DNSLookup": {
+        "DomainAddressInputHint": "Enter domain Address",
+        "LookupButton": "Lookup"
+      },
+      "LANDevices": {
+        "DevicesInLAN":"Devices in LAN",
+        "NetworkAddressInputHint": "Enter address",
+        "NetworkAdressHelper":"ex., 192.168.1.0/24",
+        "ScanNetworkButton": "Scan Network"
+      },
+      "Ping": {
+        "PingIPAddressInputHint": "Enter IP Address",
+        "PingIPHelper":"ex. 192.168.1.1",
+        "PingCountInputHint": "Enter number of pings",
+        "PingCountInputHelper": "ex. 10",
+        "PingButton": "Ping"
+      },
+      "Traceroute": {
+        "TracerouteAddressInputHint": "Enter domain",
+        "TracerouteAddressInputHelper":"ex. example.com",
+        "TracerouteButton": "Traceroute"
+      },
+      "PublicIP": {
+        "publicIPText":"Press button to check your public IP address",
+        "CheckIPButton": "Check IP"
+      },
+      "SYNAttack": {
+        "FloodIPAddressInputHint": "Enter IP Address",
+        "FloodIPAddressInputHelper":"ex. 192.168.1.1",
+        "FloodPortInputHint": "Enter port number",
+        "FloodPortInputHelper":"ex. 80",
+        "StartAttackButton": "Start attack"
+      },
+      "PingOfDeathAttack": {
+        "PODIPAddressInputHint": "Enter IP Address",
+        "PODIPAddressInputHelper":"ex. 192.168.1.1",
+        "PODCountInputHelper":"ex. 10",
+        "PODCountInputHint": "Enter number of pings",
+        "StartAttackButton": "Start attack"
+      },
+      "Settings": {
+        "ThemeStyle":"Theme style - {}",
+        "SettingsName":"Settings",
+        "SetThemeButton": "Set theme"
+      },
+      "StringsInCode": {
+        "ShowOpenPorts": "Show open ports",
+        "ShowAll": "Show all",
+        "SelectedInterface": "Selected: ",
+        "ScanningInProgress": "Scanning in progress...",
+        "scan_IP": "IP Address: ",
+        "scan_HOSTNAME": "Hostname: ",
+        "scan_MAC_ADDR": "MAC Address: ",
+        "InvalidDomainAddress": "Invalid domain Address",
+        "InvalidIPAddress": "Invalid IP Address",
+        "InvalidNetworkAddressOrMask": "Invalid network address or mask",
+        "InvalidDomainName": "Invalid Domain Name",
+        "PublicIPAddressLabel": "Your public ip address is: ",
+        "AttackInProgress": "Attack in progress...",
+        "StopAttack": "Stop Attack",
+        "StartAttack": "Start Attack"
+      }
+    },
+    "polish": {
+      "choose": {
+        "ShowOpenPorts": "Pokaż tylko otwarte",
+        "ShowAll": "Pokaż wszystkie"
+      },
+      "InterfaceInformation": {
+        "ChooseInterfaceButton": "Wybierz interfejs",
+        "RefreshIntervalButton": "Wybierz interwał odświeżania",
+        "SelectedInterfaceLabel": "Brak wybranego interfejsu",
+        "IPLabel": "Adres IP: ",
+        "MACLabel": "Adres MAC: ",
+        "DNSLabel": "Adres DNS: ",
+        "GatewayLabel": "Adres Bramy: ",
+        "DHCPLabel": "Adres DHCP: ",
+        "SubnetMaskLabel": "Maska podsieci: ",
+        "PacketsSentLabel": "Wysłane pakiety",
+        "PacketReceivedLabel": "Odebrane pakiety",
+        "LostOutgoingPacketsLabel": "Utracone pakiety wychodzące",
+        "LostIncomingPacketsLabel": "Utracone pakiety przychodzące",
+        "CurrentUploadSpeedLabel": "Aktualna prędkość wysyłania",
+        "CurrentDownloadSpeedLabel": "Aktualna prędkość pobierania",
+        "noData": "Brak danych"
+      },
+      "PortScanner": {
+        "PortScannerName":"Skaner portów",
+        "IPAddressInputHint": "Wprowadź adres IP",
+        "PortStartInputHint": "Podaj początkowy port",
+        "PortStopInputHint": "Podaj końcowy port",
+        "ScanPortsButton": "Skanuj porty",
+        "SelectPortFilterButton": "Pokaż tylko otwarte",
+        "exampleTextIp": "np., 192.168.1.1",
+        "exampleTextPortStart":"np. 22",
+        "exampleTextPortStop":"np. 80"
+      },
+      "DNSLookup": {
+        "DomainAddressInputHint": "Wprowadź adres domeny",
+        "DnsHelperText": "np. example.com",
+        "LookupButton": "Wyszukaj"
+      },
+      "LANDevices": {
+        "DevicesInLAN":"Urządzenia w LAN",
+        "NetworkAddressInputHint": "Podaj adres sieci",
+        "NetworkAdressHelper":"np., 192.168.1.0/24",
+        "ScanNetworkButton": "Skanuj sieć"
+      },
+      "Ping": {
+        "PingIPAddressInputHint": "Wprowadź adres IP",
+        "PingIPHelper":"np., 192.168.1.1",
+        "PingCountInputHint": "Podaj liczbę pingów",
+        "PingCountInputHelper": "np., 10",
+        "PingButton": "Ping"
+      },
+      "Traceroute": {
+        "TracerouteAddressInputHint": "Podaj domenę",
+        "TracerouteAddressInputHelper":"np. example.com",
+        "TracerouteButton": "Traceroute"
+      },
+      "PublicIP": {
+        "publicIPText":"Wciśnij przycisk, aby sprawdzić swój publiczny adres IP",
+        "CheckIPButton": "Sprawdź IP"
+      },
+      "SYNAttack": {
+        "FloodIPAddressInputHint": "Wprowadź adres IP",
+        "FloodIPAddressInputHelper":"np. 192.168.1.1",
+        "FloodPortInputHint": "Podaj numer portu",
+        "FloodPortInputHelper":"np. 80",
+        "StartAttackButton": "Rozpocznij atak"
+      },
+      "PingOfDeathAttack": {
+        "PODIPAddressInputHint": "Wprowadź adres IP",
+        "PODIPAddressInputHelper":"np. 192.168.1.1",
+        "PODCountInputHelper":"np. 10",
+        "PODCountInputHint": "Podaj liczbę pingów",
+        "StartAttackButton": "Rozpocznij atak"
+      },
+      "Settings": {
+        "ThemeStyle":"Styl - {}",
+        "SettingsName":"Ustawienia",
+        "SetThemeButton": "Ustaw motyw"
+      },
+      "StringsInCode": {
+        "ShowOpenPorts": "Pokaż tylko otwarte",
+        "ShowAll": "Pokaż wszystkie",
+        "SelectedInterface": "Wybrany: ",
+        "ScanningInProgress": "Skanowanie w toku...",
+        "scan_IP": "Adres IP: ",
+        "scan_HOSTNAME": "Nazwa hosta: ",
+        "scan_MAC_ADDR": "Addres MAC: ",
+        "InvalidDomainAddress": "Nieprawidłowa nazwa domeny",
+        "InvalidIPAddress": "Błędny adres IP",
+        "InvalidNetworkAddressOrMask": "Błędny adres IP albo maska",
+        "InvalidDomainName": "Błędna nazwa domeny",
+        "PublicIPAddressLabel": "Twój publiczny adres IP: ",
+        "AttackInProgress": "Atak w toku...",
+        "StopAttack": "Zatrzymaj atak",
+        "StartAttack": "Uruchom atak"
+      }
+    }
+  }
+  
