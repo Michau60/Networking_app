@@ -30,8 +30,8 @@ class Network_app(MDApp):
     selected_port_filter = "Show open ports"
     translations = {}
     language = 'Polski'
-    theme_style='Dark'
-    Theme_primary = 'Teal'
+    theme_style=''
+    Theme_primary = ''
     @staticmethod
     def resource_path(relative_path):
         try:
@@ -437,6 +437,9 @@ class Network_app(MDApp):
         self.theme_cls.theme_style = (
             "Dark" if self.theme_cls.theme_style == "Light" else "Light"
         )
+        self.theme_style = self.theme_cls.theme_style
+        self.Theme_primary = self.theme_cls.primary_palette
+        self.save_settings()
     
     
     def toggle_ping_of_death_attack(self):
@@ -504,7 +507,7 @@ class Network_app(MDApp):
             self.language = store.get('language')['value']
 
         if store.exists('theme'):
-            self.theme = store.get('theme')['value']
+            self.theme_style = store.get('theme')['value']
             
         if store.exists('Primary'):
             self.Theme_primary = store.get('Primary')['value']
@@ -516,7 +519,7 @@ class Network_app(MDApp):
 
         # Zapisanie ustawień do magazynu
         store.put('language', value=self.language)
-        store.put('theme', value=self.theme)
+        store.put('theme', value=self.theme_style)
         store.put('Primary',value=self.Theme_primary)
         
     def restart(self):
