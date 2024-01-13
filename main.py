@@ -529,7 +529,7 @@ class Network_app(MDApp):
     def load_settings(self):
         # Domyślne ustawienia
         self.language = 'English'
-        self.theme = 'Dark'
+        self.theme_style = 'Dark'
         self.Theme_primary = 'Teal'
         # Inicjalizacja JsonStore
         subpath ="Network_App_config.json"
