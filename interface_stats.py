@@ -15,7 +15,6 @@ class interface_data:
         net_out_2 = net_stat.bytes_sent
         net_in = round((net_in_2 - net_in_1) / 1024 / 1024, 3)
         net_out = round((net_out_2 - net_out_1) / 1024 / 1024, 3)
-        print(f"net_in:{net_in} net_out:{net_out}")
         return net_in,net_out
     
     def get_packet_interface_data(inf):
