@@ -23,12 +23,15 @@ import glob
 from network_syn_attack import DosAttackThread
 from network_ping_of_death import PingOfDeathAttackThread
 import json
+from kivy.storage.jsonstore import JsonStore
 class Network_app(MDApp):
     selected_IF = ""
     auto_refresh_interval = 0 # Co ile sekund ma odświeżać dane
     selected_port_filter = "Show open ports"
     translations = {}
-    language = 'polish'
+    language = 'Polski'
+    theme_style='Dark'
+    Theme_primary = 'Teal'
     @staticmethod
     def resource_path(relative_path):
         try:
@@ -41,9 +44,9 @@ class Network_app(MDApp):
     def __init__(self, **kwargs):
         super(Network_app, self).__init__(**kwargs)
         self.load_translations("languages.json")
+        self.load_settings()
         pattern = os.path.join(os.environ['LOCALAPPDATA'], 'Temp', 'onefile_*')
         matching_folders = glob.glob(pattern)
-        print(matching_folders)
         if matching_folders:
             # Wybierz pierwszy pasujący folder (lub inny, jeśli jest więcej niż jeden)
             selected_folder = matching_folders[0]
@@ -422,8 +425,8 @@ class Network_app(MDApp):
         self.icon = "icon.png"
         self.ping_instance = ap.adress_ping()
         self.theme_cls.theme_style_switch_animation = True
-        self.theme_cls.theme_style = "Dark"
-        self.theme_cls.primary_palette = "Teal"
+        self.theme_cls.theme_style = self.theme_style
+        self.theme_cls.primary_palette = self.Theme_primary
         return self.screen
     
     
@@ -469,12 +472,61 @@ class Network_app(MDApp):
         self.root.ids.pod_button.text = self.translate("StringsInCode","StartAttack")
         self.root.ids.pod_button.disabled = False
 
+
     def update_syn_attack_result(self, result):
         self.root.ids.packet_count_label.text = result
+        
+        
     def update_pod_attack_result(self, result):
         self.root.ids.packet_pod_count_label.text = result
+        
+        
+    def switch_language(self):
+        if self.language == 'English':
+            self.language = 'Polski'
+            self.root.ids.language_label.text=self.translate("Settings","languageText").format(self.language)
+        else:
+            self.language = 'English'
+            self.root.ids.language_label.text=self.translate("Settings","languageText").format(self.language)
+        self.restart()
+        
+    def load_settings(self):
+        # Domyślne ustawienia
+        self.language = 'English'
+        self.theme = 'Dark'
+        self.Theme_primary = 'Teal'
+        # Inicjalizacja JsonStore
+        subpath ="Network_App_config.json"
+        store = JsonStore(os.path.join(os.getenv("LOCALAPPDATA"), subpath))
 
+        # Sprawdzenie, czy klucze istnieją w magazynie
+        if store.exists('language'):
+            self.language = store.get('language')['value']
 
+        if store.exists('theme'):
+            self.theme = store.get('theme')['value']
+            
+        if store.exists('Primary'):
+            self.Theme_primary = store.get('Primary')['value']
+
+    def save_settings(self):
+        # Inicjalizacja JsonStore
+        subpath ="Network_App_config.json"
+        store = JsonStore(os.path.join(os.getenv("LOCALAPPDATA"), subpath))
+
+        # Zapisanie ustawień do magazynu
+        store.put('language', value=self.language)
+        store.put('theme', value=self.theme)
+        store.put('Primary',value=self.Theme_primary)
+        
+    def restart(self):
+        self.save_settings()
+        self.root.clear_widgets()
+        self.stop()
+        self.__init__()
+        self.run()
+    def on_request_close(self, *args):
+        self.save_settings()
 if __name__ == '__main__':
     try:
         if hasattr(sys, '_MEIPASS'):

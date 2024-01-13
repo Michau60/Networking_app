@@ -415,23 +415,47 @@ MDScreen:
 			name: 'screen 11' 
 			text: app.translate("Settings","SettingsName") 
 			icon: 'wrench-cog-outline'
-			spacing: dp(10) 
-			MDCard:
-				orientation: "vertical"
-				padding: 0, 0, 0 , "36dp"
-				size_hint: .5, .5
-				pos_hint: {"center_x": .5, "center_y": .5}
-				elevation: 2
-				shadow_offset: 0, -2
+			spacing: dp(10)
+			BoxLayout:
+				orientation:'horizontal'
+				spacing: dp(10)
+				padding: dp(10) 
+				MDCard:
+					orientation: "vertical"
+					padding: 0, 0, 0 , "36dp"
+					size_hint: .5, .5
+					pos_hint: {"center_x": .5, "center_y": .5}
+					elevation: 2
+					shadow_offset: 0, -2
 
-				MDLabel:
-					text: app.translate("Settings","ThemeStyle").format(app.theme_cls.theme_style)
-					halign: "center"
-					valign: "center"
-					bold: True
-					font_style: "H5"
+					MDLabel:
+						text: app.translate("Settings","ThemeStyle").format(app.theme_cls.theme_style)
+						halign: "center"
+						valign: "center"
+						bold: True
+						font_style: "H5"
 
-				MDRaisedButton:
-					text: app.translate("Settings","SetThemeButton")
-					on_release: app.switch_theme_style()
-					pos_hint: {"center_x": .5}
+					MDRaisedButton:
+						text: app.translate("Settings","SetThemeButton")
+						on_release: app.switch_theme_style()
+						pos_hint: {"center_x": .5}
+				MDCard:
+					orientation: "vertical"
+					padding: 0, 0, 0 , "36dp"
+					size_hint: .5, .5
+					pos_hint: {"center_x": .5, "center_y": .5}
+					elevation: 2
+					shadow_offset: 0, -2
+
+					MDLabel:
+						id:language_label
+						text: app.translate("Settings","languageText").format(app.language)
+						halign: "center"
+						valign: "center"
+						bold: True
+						font_style: "H5"
+
+					MDRaisedButton:
+						text: app.translate("Settings","SetLanguageButton")
+						on_release: app.switch_language()
+						pos_hint: {"center_x": .5}

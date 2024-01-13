@@ -1,5 +1,5 @@
 {
-    "english": {
+    "English": {
       "choose": {
         "ShowOpenPorts": "Show open ports",
         "ShowAll": "Show all"
@@ -77,7 +77,9 @@
       "Settings": {
         "ThemeStyle":"Theme style - {}",
         "SettingsName":"Settings",
-        "SetThemeButton": "Set theme"
+        "SetThemeButton": "Set theme",
+        "languageText":"Your current language is {}",
+        "SetLanguageButton":"Change language"
       },
       "StringsInCode": {
         "ShowOpenPorts": "Show open ports",
@@ -97,7 +99,7 @@
         "StartAttack": "Start Attack"
       }
     },
-    "polish": {
+    "Polski": {
       "choose": {
         "ShowOpenPorts": "Pokaż tylko otwarte",
         "ShowAll": "Pokaż wszystkie"
@@ -175,7 +177,9 @@
       "Settings": {
         "ThemeStyle":"Styl - {}",
         "SettingsName":"Ustawienia",
-        "SetThemeButton": "Ustaw motyw"
+        "SetThemeButton": "Ustaw motyw",
+        "languageText":"Wybrany język to {}",
+        "SetLanguageButton":"Zmień język"
       },
       "StringsInCode": {
         "ShowOpenPorts": "Pokaż tylko otwarte",
