@@ -25,6 +25,7 @@ from network_ping_of_death import PingOfDeathAttackThread
 import json
 from kivy.storage.jsonstore import JsonStore
 import subprocess
+import netifaces
 class Network_app(MDApp):
     selected_IF = ""
     auto_refresh_interval = 0 # Co ile sekund ma odświeżać dane
@@ -180,13 +181,21 @@ class Network_app(MDApp):
         
 
     def get_if_info(self,inf): #pobieranie danych z wybranego interfejsu
-        network_info = interface_info.int_info.get_network_info(inf)
-        self.screen.ids.int_IP.text = str(network_info[0])
-        self.screen.ids.int_MAC.text = str(network_info[1])
-        self.screen.ids.int_DNS.text = str(network_info[2])
-        self.screen.ids.int_GW.text = str(network_info[3])
-        self.screen.ids.int_DHCP.text = str(network_info[4])
-        self.screen.ids.int_sub_mask.text = str(network_info[5])
+        if_name_guid=interface_info.int_info.get_connection_name_from_guid(netifaces.interfaces())
+        network_info = interface_info.int_info.get_network_info(inf,if_name_guid)
+        try:
+            for key,value in network_info.items():
+                if value is "None":
+                    translated_val = self.translate("InterfaceInformation","noData")
+                    network_info[key] = translated_val
+        except Exception as e:
+            print(e)
+        self.screen.ids.int_IP.text = network_info["IP Address"]
+        self.screen.ids.int_MAC.text = network_info["MAC Address"]
+        self.screen.ids.int_DNS.text = network_info["DNS Servers"]
+        self.screen.ids.int_GW.text = network_info["Default Gateway"]
+        self.screen.ids.int_DHCP.text = network_info["DHCP Server"]
+        self.screen.ids.int_sub_mask.text = network_info["Subnet Mask"]
     
 
     def packet_data_get_info(self,current_interface): #pobieranie danych o pakietach z wybranego interfejsu

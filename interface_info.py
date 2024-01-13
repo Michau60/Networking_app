@@ -1,85 +1,57 @@
 import wmi
+import winreg as wr
 class int_info:
-        
-    def get_network_info(interface):
-        ip_info = int_info.get_IP_info(interface)
-        mac_info = int_info.get_MAC_info(interface)
-        mask_info = int_info.get_mask_info(interface)
-        dns_info = int_info.get_dns_info(interface)
-        dhcp_info = int_info.get_dhcp_info(interface)
-        gw_info = int_info.get_gw_info(interface)
-        return ip_info, mac_info, dns_info, gw_info, dhcp_info, mask_info 
-    
-    
-    def get_IP_info(connection_name):
+    def get_connection_name_from_guid(iface_guids):
+        iface_names_dict = {guid: '(unknown)' for guid in iface_guids}
+
+        try:
+            reg = wr.ConnectRegistry(None, wr.HKEY_LOCAL_MACHINE)
+            reg_key = wr.OpenKey(reg, r'SYSTEM\CurrentControlSet\Control\Network\{4d36e972-e325-11ce-bfc1-08002be10318}')
+
+            for guid in iface_guids:
+                try:
+                    reg_subkey = wr.OpenKey(reg_key, guid + r'\Connection')
+                    iface_names_dict[guid] = wr.QueryValueEx(reg_subkey, 'Name')[0]
+                except FileNotFoundError:
+                    pass
+        except Exception as e:
+            print(f"Error: {e}")
+
+        return iface_names_dict
+
+    def get_network_info(connection_name, iface_names_dict):
         c = wmi.WMI()
 
-        # Iteracja przez interfejsy sieciowe
-        for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-            if connection_name.lower() in interface.Description.lower():
-                # Sprawdź, czy istnieje adres IP
-                ip_info = interface.IPAddress
-                if ip_info:
-                    return ip_info[0]
-                else:
-                    return "Brak danych"
-                
-    def get_MAC_info(connection_name):
-        c = wmi.WMI()
+        # Sprawdź, czy nazwa połączenia istnieje w słowniku
+        if connection_name in iface_names_dict.values():
+            # Znajdź GUID odpowiadające nazwie połączenia
+            guid = next((k for k, v in iface_names_dict.items() if v == connection_name), None)
 
-        # Iteracja przez interfejsy sieciowe
-        for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-            if connection_name.lower() in interface.Description.lower():
-                # Sprawdź, czy istnieje adres IP
-                mac_info = interface.MACAddress
-                if mac_info:
-                    return mac_info
-                else:
-                    return "Brak danych"
-    
-    def get_mask_info(connection_name):
-        c = wmi.WMI()
+            # Iteracja przez interfejsy sieciowe
+            for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
+                if guid and guid.lower() in interface.SettingID.lower():
+                    # Sprawdź, czy istnieje adres IP
+                    ip_info = interface.IPAddress[0] if interface.IPAddress else "None"
+                    mac_info = interface.MACAddress if interface.MACAddress else "None"
+                    subnet_mask = interface.IPSubnet[0] if interface.IPSubnet else "None"
+                    dns_servers = ', '.join(interface.DNSServerSearchOrder) if interface.DNSServerSearchOrder else "None"
+                    dhcp_info = interface.DHCPServer if interface.DHCPEnabled else "None"
+                    gw_info = interface.DefaultIPGateway[0] if interface.DefaultIPGateway else "None"
 
-        # Iteracja przez interfejsy sieciowe
-        for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-            if connection_name.lower() in interface.Description.lower():
-                # Sprawdź, czy istnieje adres IP
-                subnet_mask = interface.IPSubnet
-                if subnet_mask:
-                    return subnet_mask[0]
-                else:
-                    return "Brak danych"
-    
-    def get_dns_info(connection_name):
-        c = wmi.WMI()
+                    return {
+                        'IP Address': ip_info,
+                        'MAC Address': mac_info,
+                        'Subnet Mask': subnet_mask,
+                        'DNS Servers': dns_servers,
+                        'DHCP Server': dhcp_info,
+                        'Default Gateway': gw_info
+                    }
 
-        # Iteracja przez interfejsy sieciowe
-        for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-            if connection_name.lower() in interface.Description.lower():
-                # Sprawdź, czy istnieje adres DNS
-                dns_servers = interface.DNSServerSearchOrder
-                if dns_servers:
-                    return f"{', '.join(dns_servers)}"
-                else:
-                    return "Brak danych"
-    
-    def get_dhcp_info(connection_name):
-        c = wmi.WMI()
-        for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-            if connection_name.lower() in interface.Description.lower():
-                    # Sprawdź, czy interfejs korzysta z DHCP
-                if interface.DHCPEnabled:
-                    return interface.DHCPServer
-                else:
-                    "Brak danych"
-                    
-                    
-    def get_gw_info(connection_name):
-        c = wmi.WMI()
-        for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-            if connection_name.lower() in interface.Description.lower():
-                    # Sprawdź, czy interfejs korzysta z DHCP
-                if interface.DefaultIPGateway:
-                    return interface.DefaultIPGateway[0]
-                else:
-                    "Brak danych"
+        return {
+            'IP Address': "None",
+            'MAC Address': "None",
+            'Subnet Mask': "None",
+            'DNS Servers': "None",
+            'DHCP Server': "None",
+            'Default Gateway': "None"
+        }
