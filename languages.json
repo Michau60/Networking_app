@@ -29,19 +29,20 @@
         "PortStopInputHint": "Enter end port",
         "ScanPortsButton": "Scan Ports",
         "SelectPortFilterButton": "Show open ports",
-        "exampleTextIp": "ex., 192.168.1.1",
+        "exampleTextIp": "ex. 192.168.1.1",
         "exampleTextPortStart":"ex. 22",
         "exampleTextPortStop":"ex. 80"
 
       },
       "DNSLookup": {
         "DomainAddressInputHint": "Enter domain Address",
+        "DnsHelperText": "ex. example.com",
         "LookupButton": "Lookup"
       },
       "LANDevices": {
         "DevicesInLAN":"Devices in LAN",
         "NetworkAddressInputHint": "Enter address",
-        "NetworkAdressHelper":"ex., 192.168.1.0/24",
+        "NetworkAdressHelper":"ex. 192.168.1.0/24",
         "ScanNetworkButton": "Scan Network"
       },
       "Ping": {
@@ -57,10 +58,12 @@
         "TracerouteButton": "Traceroute"
       },
       "PublicIP": {
+        "PublicIPName":"Public IP",
         "publicIPText":"Press button to check your public IP address",
         "CheckIPButton": "Check IP"
       },
       "SYNAttack": {
+        "SYNAttackName":"SYN attack",
         "FloodIPAddressInputHint": "Enter IP Address",
         "FloodIPAddressInputHelper":"ex. 192.168.1.1",
         "FloodPortInputHint": "Enter port number",
@@ -68,6 +71,7 @@
         "StartAttackButton": "Start attack"
       },
       "PingOfDeathAttack": {
+        "PingOfDeathAttackName":"PoD Attack",
         "PODIPAddressInputHint": "Enter IP Address",
         "PODIPAddressInputHelper":"ex. 192.168.1.1",
         "PODCountInputHelper":"ex. 10",
@@ -96,7 +100,10 @@
         "PublicIPAddressLabel": "Your public ip address is: ",
         "AttackInProgress": "Attack in progress...",
         "StopAttack": "Stop Attack",
-        "StartAttack": "Start Attack"
+        "StartAttack": "Start Attack",
+        "NotInstalledLabel":"NMAP is not installed, press button to open NMAP download page",
+        "NotInstalledButton":"Download NMAP",
+        "NoOpenPorts":"No open ports"
       }
     },
     "Polski": {
@@ -157,10 +164,12 @@
         "TracerouteButton": "Traceroute"
       },
       "PublicIP": {
+        "PublicIPName":"Publiczne IP",
         "publicIPText":"Wciśnij przycisk, aby sprawdzić swój publiczny adres IP",
         "CheckIPButton": "Sprawdź IP"
       },
       "SYNAttack": {
+        "SYNAttackName":"Atak SYN",
         "FloodIPAddressInputHint": "Wprowadź adres IP",
         "FloodIPAddressInputHelper":"np. 192.168.1.1",
         "FloodPortInputHint": "Podaj numer portu",
@@ -168,6 +177,7 @@
         "StartAttackButton": "Rozpocznij atak"
       },
       "PingOfDeathAttack": {
+        "PingOfDeathAttackName":"Atak PoD",
         "PODIPAddressInputHint": "Wprowadź adres IP",
         "PODIPAddressInputHelper":"np. 192.168.1.1",
         "PODCountInputHelper":"np. 10",
@@ -196,7 +206,10 @@
         "PublicIPAddressLabel": "Twój publiczny adres IP: ",
         "AttackInProgress": "Atak w toku...",
         "StopAttack": "Zatrzymaj atak",
-        "StartAttack": "Uruchom atak"
+        "StartAttack": "Uruchom atak",
+        "NotInstalledLabel":"NMAP nie jest zainstalowany. Naciśnij przycisk, aby otworzyć stronę pobierania NMAP.",
+        "NotInstalledButton":"Pobierz NMAP",
+        "NoOpenPorts":"Brak otwartych portów"
       }
     }
   }

@@ -1,10 +1,10 @@
-# import packages 
 import re
 from kivy.resources import resource_add_path
 from kivy.lang import Builder
 from kivymd.app import MDApp
 from kivymd.uix.menu import MDDropdownMenu
 from kivymd.uix.label import MDLabel
+from kivymd.uix.button import MDRaisedButton
 import auto_size
 import interface_stats as inf_stat
 from kivy.clock import Clock
@@ -24,6 +24,7 @@ from network_syn_attack import DosAttackThread
 from network_ping_of_death import PingOfDeathAttackThread
 import json
 from kivy.storage.jsonstore import JsonStore
+import subprocess
 class Network_app(MDApp):
     selected_IF = ""
     auto_refresh_interval = 0 # Co ile sekund ma odświeżać dane
@@ -32,6 +33,7 @@ class Network_app(MDApp):
     language = 'Polski'
     theme_style=''
     Theme_primary = ''
+    icon_path=""
     @staticmethod
     def resource_path(relative_path):
         try:
@@ -43,21 +45,24 @@ class Network_app(MDApp):
     
     def __init__(self, **kwargs):
         super(Network_app, self).__init__(**kwargs)
-        self.load_translations("languages.json")
-        self.load_settings()
         pattern = os.path.join(os.environ['LOCALAPPDATA'], 'Temp', 'onefile_*')
+        self.load_settings()
         matching_folders = glob.glob(pattern)
         if matching_folders:
             # Wybierz pierwszy pasujący folder (lub inny, jeśli jest więcej niż jeden)
             selected_folder = matching_folders[0]
             kv_file_path = os.path.join(selected_folder, 'layout.kv')
-
+            lang_file_path = os.path.join(selected_folder, 'languages.json')
+            self.icon_path = os.path.join(selected_folder, 'icon.png')
+            self.load_translations(lang_file_path)
             # Załaduj plik .kv
             self.screen = Builder.load_file(kv_file_path)
         else:
             print("Nie znaleziono pasującego folderu TEMP używam lokalnego.")
             current_folder = os.getcwd()
             kv_file_path = os.path.join(current_folder, 'layout.kv')
+            lang_file_path = os.path.join(current_folder, 'languages.json')
+            self.load_translations(lang_file_path)
             self.screen = Builder.load_file('./layout.kv') #załadowanie interfejsu z pliku
         int_names=inf_stat.interface_data.get_if_names()
         choose = [self.translate("choose","ShowOpenPorts"),self.translate("choose","ShowAll")]
@@ -221,9 +226,13 @@ class Network_app(MDApp):
     
     def port_view_filter(self,port_list,option):
         filtered_port_list = misc.Tools.print_list_items(port_list,option)
-        for result in filtered_port_list:  # przedstawianie wyników w aplikacji
-                label = MDLabel(text=result, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
-                self.root.ids.result_layout.add_widget(label)     
+        if len(filtered_port_list)==0:
+                label = MDLabel(text=self.translate("StringsInCode","NoOpenPorts"), theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+                self.root.ids.result_layout.add_widget(label)
+        else:
+            for result in filtered_port_list:  # przedstawianie wyników w aplikacji
+                    label = MDLabel(text=result, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+                    self.root.ids.result_layout.add_widget(label)     
     
     
     def domain_info(self, domain):
@@ -252,7 +261,7 @@ class Network_app(MDApp):
             self.root.ids.lookup_button.disabled = True
     
            
-    def check_ip_format(self,text,field_id): #sprawdzanie poprawnosci wpisanego adresu ip
+    def check_ip_format(self,text,field_id,button_id): #sprawdzanie poprawnosci wpisanego adresu ip
         ip_address_input = self.root.ids[field_id]
         ip_pattern = re.compile(
             r'^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
@@ -267,9 +276,8 @@ class Network_app(MDApp):
             ip_address_input.error = True
             ip_address_input.helper_text_mode = "persistent"
             ip_address_input.helper_text = self.translate("StringsInCode","InvalidIPAddress")
-            self.root.ids.scan_port_button.disabled = True
+            self.root.ids[button_id].disabled = True
             
-
 
     def check_ports_input(self,text):
         port_start_input = self.root.ids.port_start_input
@@ -280,6 +288,16 @@ class Network_app(MDApp):
         else:
             self.root.ids.scan_port_button.disabled = True
 
+    
+    def check_fields(self,field1_id,field2_id,button_id):
+        field=self.root.ids[field1_id]
+        field2=self.root.ids[field2_id]
+        button=self.root.ids[button_id]
+        if field=="" and field2=="":
+            button.disabled=True
+        else:
+            button.disabled=False
+    
 
     def check_network_format(self, text):
         ip_pattern = re.compile(
@@ -332,11 +350,22 @@ class Network_app(MDApp):
                 label_text = f"{self.translate('StringsInCode','scan_IP')} {device['ip']}, {self.translate('StringsInCode','scan_HOSTNAME')} {device['hostname']}, {self.translate('StringsInCode','scan_MAC_ADDR')} {device['mac']}"
                 label = MDLabel(text=label_text, theme_text_color="Secondary", size_hint_y=None, height=dp(40))
                 device_list.add_widget(label)
-                                
-        t = Thread(target=lambda: self.network_scan_thread(network, callback))
+        def callback_not_installed():
+            self.root.ids.result_layout_scan.remove_widget(scanning_label)
+            not_installed_label = MDLabel(text=self.translate("StringsInCode","NotInstalledLabel"), theme_text_color="Secondary", size_hint_y=None, height=dp(40))
+            not_installed_button = MDRaisedButton(text=self.translate("StringsInCode","NotInstalledButton"), theme_text_color="Secondary", size_hint_y=None, height=dp(40),on_release=self.open_nmap_download_page)
+            self.root.ids.result_layout_scan.add_widget(not_installed_label)
+            self.root.ids.result_layout_scan.add_widget(not_installed_button)
+        t = Thread(target=lambda: self.network_scan_thread(network, callback,callback_not_installed))
         t.start()
-    
-    
+        
+        
+    def open_nmap_download_page(self, *args):
+        # Otwórz stronę pobierania nmap w przeglądarce
+        nmap_download_url = "https://nmap.org/download.html"
+        subprocess.Popen(["start", "cmd", "/c", "start", nmap_download_url], shell=True)
+        
+        
     def is_valid_ip_or_domain(self,input_text):
         # Wyrażenie regularne dla poprawnego adresu IP
         ip_pattern = re.compile(
@@ -353,11 +382,11 @@ class Network_app(MDApp):
 
         # Sprawdź, czy to jest poprawny adres IP
         if ip_pattern.match(input_text):
-            self.root.ids.ping_button.disabled = False
+            return
 
         # Sprawdź, czy to jest poprawna nazwa domeny z końcówką
         if domain_pattern.match(input_text):
-            self.root.ids.ping_button.disabled = False
+            return
 
         return True
     
@@ -367,9 +396,12 @@ class Network_app(MDApp):
         self.root.ids.public_ip_label.text = self.translate("StringsInCode","PublicIPAddressLabel") + ip_addr 
 
 
-    def network_scan_thread(self, network,callback):
-        scan_results = NetworkDiscover.NetworkScanner.scan_network(network)
-        Clock.schedule_once(lambda dt: callback(scan_results))
+    def network_scan_thread(self, network,callback,callback_not_installed):
+        if not NetworkDiscover.NetworkScanner.check_nmap_installed():
+            Clock.schedule_once(lambda dt: callback_not_installed())     
+        else:
+            scan_results = NetworkDiscover.NetworkScanner.scan_network(network)
+            Clock.schedule_once(lambda dt: callback(scan_results))
         
         
     def start_ping_thread(self,ip_addr,num_ping):
@@ -422,7 +454,7 @@ class Network_app(MDApp):
         
     def build(self):
         self.title = "Network APP"
-        self.icon = "icon.png"
+        self.icon = self.icon_path
         self.ping_instance = ap.adress_ping()
         self.theme_cls.theme_style_switch_animation = True
         self.theme_cls.theme_style = self.theme_style
@@ -443,8 +475,8 @@ class Network_app(MDApp):
     
     
     def toggle_ping_of_death_attack(self):
-        target_ip = self.root.ids.pod_ip_address_input.text  # Zmień na właściwy adres docelowy
-        number_of_packets = self.root.ids.pod_count_input.text  # Zmień na odpowiednią liczbę pakietów
+        target_ip = self.root.ids.pod_ip_address_input.text  
+        number_of_packets = self.root.ids.pod_count_input.text 
 
         if not hasattr(self, 'ping_of_death_thread') or not self.ping_of_death_thread.running:
             self.ping_of_death_thread = PingOfDeathAttackThread(app_instance=self, target_ip=target_ip, number=int(number_of_packets))
@@ -493,6 +525,7 @@ class Network_app(MDApp):
             self.root.ids.language_label.text=self.translate("Settings","languageText").format(self.language)
         self.restart()
         
+        
     def load_settings(self):
         # Domyślne ustawienia
         self.language = 'English'
@@ -512,6 +545,7 @@ class Network_app(MDApp):
         if store.exists('Primary'):
             self.Theme_primary = store.get('Primary')['value']
 
+
     def save_settings(self):
         # Inicjalizacja JsonStore
         subpath ="Network_App_config.json"
@@ -522,14 +556,15 @@ class Network_app(MDApp):
         store.put('theme', value=self.theme_style)
         store.put('Primary',value=self.Theme_primary)
         
+        
     def restart(self):
         self.save_settings()
         self.root.clear_widgets()
         self.stop()
         self.__init__()
         self.run()
-    def on_request_close(self, *args):
-        self.save_settings()
+        
+        
 if __name__ == '__main__':
     try:
         if hasattr(sys, '_MEIPASS'):

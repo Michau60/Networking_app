@@ -6,10 +6,10 @@ MDScreen:
 			name: 'Interface information' 
 			text: 'Info' 
 			icon: 'ethernet' 
-			spacing: dp(10)
 			MDBoxLayout:
 				orientation: "vertical"
 				spacing: dp(10)
+				padding: dp(10)
 				MDRaisedButton:
 					id: select_if_button
 					text: app.translate("InterfaceInformation","ChooseInterfaceButton")
@@ -96,15 +96,15 @@ MDScreen:
 		 
 		MDBottomNavigationItem: #skaner portów
 			name: 'screen 2' 
-			text: 'Port Scanner' 
+			text: app.translate("PortScanner","PortScannerName") 
 			icon: 'tab-search'
-			spacing: dp(10)
 			BoxLayout:
         		orientation: 'vertical'
 				spacing: dp(10)
+				padding: dp(30)
 				MDTextField:
 					id: port_ip_address_input
-					on_text: app.check_ip_format(self.text,'port_ip_address_input')
+					on_text: app.check_ip_format(self.text,'port_ip_address_input','scan_port_button')
 					hint_text: app.translate("PortScanner","IPAddressInputHint")
 					helper_text: app.translate("PortScanner","exampleTextIp")
 					helper_text_mode: "on_focus"
@@ -157,11 +157,11 @@ MDScreen:
 		MDBottomNavigationItem: #DNS lookup
 			name: 'screen 3' 
 			text: 'WHOIS dns' 
-			icon: 'search-web'
-			spacing: dp(10) 
+			icon: 'search-web' 
 			BoxLayout:
 				orientation: "vertical"
 				spacing: dp(10)
+				padding: dp(30)
 				MDTextField:
 					id: domain_address_input
 					on_text: app.is_valid_domain_name(self.text)
@@ -190,8 +190,6 @@ MDScreen:
 			name: 'screen 5' 
 			text: app.translate("LANDevices","DevicesInLAN")
 			icon: 'help-network'
-			spacing: dp(30) 
-			padding: dp(30)
 			BoxLayout:
 				orientation: 'vertical'
 				spacing: dp(10)
@@ -234,7 +232,7 @@ MDScreen:
 					id: ping_ip_address_input
 					on_text: app.is_valid_ip_or_domain(self.text)
 					hint_text: app.translate("Ping","PingIPAddressInputHint")
-					helper_text: app.translate("Ping","PingIPAddressInputHint")
+					helper_text: app.translate("Ping","PingIPHelper")
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -243,9 +241,9 @@ MDScreen:
 				MDTextField:
 					id: ping_count_input
 					input_filter: 'int'
-					text: "5"
 					hint_text: app.translate("Ping","PingCountInputHint")
 					helper_text: app.translate("Ping","PingCountInputHelper")
+					on_text:app.check_fields('ping_ip_address_input','ping_count_input','ping_button')
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -301,7 +299,7 @@ MDScreen:
 						height: self.minimum_height
 		MDBottomNavigationItem: #public ip
 			name: 'screen 8' 
-			text: 'Public IP' 
+			text: app.translate("PublicIP","PublicIPName") 
 			icon: 'test-tube'
 			spacing: dp(10) 
 			BoxLayout:
@@ -325,7 +323,7 @@ MDScreen:
 					padding: dp(30)
 		MDBottomNavigationItem: #syn flood
 			name: 'screen 9' 
-			text: 'SYN Attack' 
+			text: app.translate("SYNAttack","SYNAttackName") 
 			icon: 'close-network'
 			spacing: dp(10)  
 			BoxLayout:
@@ -334,7 +332,7 @@ MDScreen:
 				padding: dp(10)
 				MDTextField:
 					id: flood_ip_address_input
-					on_text: app.check_ip_format(self.text,'flood_ip_address_input')
+					on_text: app.check_ip_format(self.text,'flood_ip_address_input','flood_button')
 					hint_text: app.translate("SYNAttack","FloodIPAddressInputHint")
 					helper_text: app.translate("SYNAttack","FloodIPAddressInputHelper")
 					helper_text_mode: "on_focus"
@@ -347,6 +345,7 @@ MDScreen:
 					input_filter: 'int'
 					hint_text: app.translate("SYNAttack","FloodPortInputHint")
 					helper_text: app.translate("SYNAttack","FloodPortInputHelper")
+					on_text:app.check_fields('flood_ip_address_input','flood_port_input','flood_button')
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -357,6 +356,7 @@ MDScreen:
 					text: app.translate("SYNAttack","StartAttackButton")
 					on_release: app.toggle_attack()
 					pos_hint: {'center_x': 0.5}
+					disabled:True
 				ScrollView:
 					BoxLayout:
 						id: result_layout_flood
@@ -369,7 +369,7 @@ MDScreen:
 							id:packet_count_label
 		MDBottomNavigationItem: #Ping of death
 			name: 'screen 10' 
-			text: 'PoD Attack' 
+			text: app.translate("PingOfDeathAttack","PingOfDeathAttackName") 
 			icon: 'close-network'
 			spacing: dp(10)  
 			BoxLayout:
@@ -378,7 +378,7 @@ MDScreen:
 				padding: dp(10)
 				MDTextField:
 					id: pod_ip_address_input
-					on_text: app.check_ip_format(self.text,'pod_ip_address_input')
+					on_text: app.check_ip_format(self.text,'pod_ip_address_input','pod_button')
 					hint_text: app.translate("PingOfDeathAttack","PODIPAddressInputHint")
 					helper_text: app.translate("PingOfDeathAttack","PODIPAddressInputHelper")
 					helper_text_mode: "on_focus"
@@ -391,6 +391,7 @@ MDScreen:
 					input_filter: 'int'
 					hint_text: app.translate("PingOfDeathAttack","PODCountInputHint")
 					helper_text: app.translate("PingOfDeathAttack","PODCountInputHelper")
+					on_text:app.check_fields('pod_ip_address_input','pod_count_input','pod_button')
 					helper_text_mode: "on_focus"
 					pos_hint: {'center_x': 0.5}
 					size_hint_x: None
@@ -401,6 +402,7 @@ MDScreen:
 					text: app.translate("PingOfDeathAttack","StartAttackButton")
 					on_release: app.toggle_ping_of_death_attack()
 					pos_hint: {'center_x': 0.5}
+					disabled:True
 				ScrollView:
 					BoxLayout:
 						id: result_layout_pod

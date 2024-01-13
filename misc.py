@@ -11,10 +11,6 @@ class Tools:
                 port_status = result.split(":")[1]
                 if port_status == "Open":
                     open_port_list.append(result)
-            if len(open_port_list)==0:
-                open_port_list.append("Brak otwartych portów")
-                return open_port_list
-            else:
-                return open_port_list
+            return open_port_list
         if option == "Show all" or option=="Pokaż wszystkie":
             return port_list
