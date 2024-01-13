@@ -136,7 +136,7 @@
         "PortStopInputHint": "Podaj końcowy port",
         "ScanPortsButton": "Skanuj porty",
         "SelectPortFilterButton": "Pokaż tylko otwarte",
-        "exampleTextIp": "np., 192.168.1.1",
+        "exampleTextIp": "np. 192.168.1.1",
         "exampleTextPortStart":"np. 22",
         "exampleTextPortStop":"np. 80"
       },
@@ -148,14 +148,14 @@
       "LANDevices": {
         "DevicesInLAN":"Urządzenia w LAN",
         "NetworkAddressInputHint": "Podaj adres sieci",
-        "NetworkAdressHelper":"np., 192.168.1.0/24",
+        "NetworkAdressHelper":"np. 192.168.1.0/24",
         "ScanNetworkButton": "Skanuj sieć"
       },
       "Ping": {
         "PingIPAddressInputHint": "Wprowadź adres IP",
-        "PingIPHelper":"np., 192.168.1.1",
+        "PingIPHelper":"np. 192.168.1.1",
         "PingCountInputHint": "Podaj liczbę pingów",
-        "PingCountInputHelper": "np., 10",
+        "PingCountInputHelper": "np. 10",
         "PingButton": "Ping"
       },
       "Traceroute": {
