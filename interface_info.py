@@ -24,21 +24,22 @@ class int_info:
 
         # Sprawdź, czy nazwa połączenia istnieje w słowniku
         if connection_name in iface_names_dict.values():
-            # Znajdź GUID odpowiadające nazwie połączenia
+            # Znajdź GUID odpowiadający nazwie połączenia
             guid = next((k for k, v in iface_names_dict.items() if v == connection_name), None)
 
-            # Iteracja przez interfejsy sieciowe
-            for interface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
+            # Iteracja przez interfejsy sieciowe IPEnabled=True
+            for interface in c.Win32_NetworkAdapterConfiguration():
                 if guid and guid.lower() in interface.SettingID.lower():
-                    # Sprawdź, czy istnieje adres IP
+                    isEnabled = interface.IPEnabled if interface.IPEnabled else "None"
                     ip_info = interface.IPAddress[0] if interface.IPAddress else "None"
                     mac_info = interface.MACAddress if interface.MACAddress else "None"
                     subnet_mask = interface.IPSubnet[0] if interface.IPSubnet else "None"
                     dns_servers = ', '.join(interface.DNSServerSearchOrder) if interface.DNSServerSearchOrder else "None"
-                    dhcp_info = interface.DHCPServer if interface.DHCPEnabled else "None"
+                    dhcp_info = interface.DHCPServer if interface.DHCPEnabled and interface.DHCPServer!=None else "None"
                     gw_info = interface.DefaultIPGateway[0] if interface.DefaultIPGateway else "None"
 
                     return {
+                        'Enabled':str(isEnabled),
                         'IP Address': ip_info,
                         'MAC Address': mac_info,
                         'Subnet Mask': subnet_mask,
@@ -48,6 +49,7 @@ class int_info:
                     }
 
         return {
+            'Enabled':"None",
             'IP Address': "None",
             'MAC Address': "None",
             'Subnet Mask': "None",

@@ -190,6 +190,13 @@ class Network_app(MDApp):
                     network_info[key] = translated_val
         except Exception as e:
             print(e)
+        if network_info["Enabled"] == "True":
+            translated_val = self.translate("StringsInCode","IfEnabled")
+            network_info["Enabled"] = translated_val
+        else:
+            translated_val = self.translate("StringsInCode","IfDisabled")
+            network_info["Enabled"] = translated_val
+        self.screen.ids.int_Enabled.text = network_info["Enabled"]
         self.screen.ids.int_IP.text = network_info["IP Address"]
         self.screen.ids.int_MAC.text = network_info["MAC Address"]
         self.screen.ids.int_DNS.text = network_info["DNS Servers"]
@@ -292,11 +299,38 @@ class Network_app(MDApp):
         port_start_input = self.root.ids.port_start_input
         port_stop_input = self.root.ids.port_stop_input
         ip_address_input = self.root.ids.port_ip_address_input
+        
+        ##poprawić
+        # start_is_positive=self.check_positive('port_start_input')
+        # stop_is_positive=self.check_positive('port_stop_input')
+        
+        # if start_is_positive==True:
+        #     port_start_input.helper_text = ""
+        # else:
+        #     port_start_input.error=True
+        #     port_start_input.helper_text = self.translate("StringsInCode","MustBePositive")
+            
+        # if stop_is_positive == True and port_stop_input!="":
+        #     port_stop_input.helper_text = ""
+        # else:
+        #     port_stop_input.error=True
+        #     port_stop_input.helper_text = self.translate("StringsInCode","MustBePositive")
+            # and start_is_positive == True and stop_is_positive == True
         if port_start_input.text !='' and port_stop_input.text!='' and ip_address_input.text!='':
             self.root.ids.scan_port_button.disabled = False
         else:
             self.root.ids.scan_port_button.disabled = True
 
+    def check_positive(self,input_id):
+        tb = self.root.ids[input_id]
+        is_positive =  re.compile(
+                r'\d+$'
+            )
+        if is_positive.match(tb.text):
+            return True
+        else:
+            return False 
+    
     
     def check_fields(self,field1_id,field2_id,button_id):
         field=self.root.ids[field1_id]
@@ -370,12 +404,12 @@ class Network_app(MDApp):
         
         
     def open_nmap_download_page(self, *args):
-        # Otwórz stronę pobierania nmap w przeglądarce
         nmap_download_url = "https://nmap.org/download.html"
         subprocess.Popen(["start", "cmd", "/c", "start", nmap_download_url], shell=True)
         
         
-    def is_valid_ip_or_domain(self,input_text):
+    def is_valid_ip_or_domain(self,input_text,text_filed_id):
+        tf=self.root.ids[text_filed_id]
         # Wyrażenie regularne dla poprawnego adresu IP
         ip_pattern = re.compile(
             r'^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.'
@@ -385,20 +419,25 @@ class Network_app(MDApp):
         )
 
         # Wyrażenie regularne dla poprawnej nazwy domeny z końcówką
-        domain_pattern = re.compile(
+        domain_pattern  = re.compile(
             r'^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z]{2,})+$'
         )
 
         # Sprawdź, czy to jest poprawny adres IP
         if ip_pattern.match(input_text):
+            tf.error = False
+            tf.helper_text = ""
             return
 
         # Sprawdź, czy to jest poprawna nazwa domeny z końcówką
         if domain_pattern.match(input_text):
+            tf.error = False
+            tf.helper_text = ""
             return
-
-        return True
-    
+        
+        tf.error = True
+        tf.helper_text=self.translate("StringsInCode","InvalidIPAddressOrDomain")
+           
     
     def get_public_ip(self):
         ip_addr=pi.get_public_ip_from_html()
@@ -416,7 +455,6 @@ class Network_app(MDApp):
     def start_ping_thread(self,ip_addr,num_ping):
         ping_list = self.root.ids.ping_result_layout
         ping_list.clear_widgets()
-        # Uruchamiamy wątek do pingowania
         ping_thread = Thread(target=self.ping_thread, args=(ip_addr,num_ping))
         ping_thread.start()
 
@@ -426,7 +464,6 @@ class Network_app(MDApp):
         def update_callback(result):
             # Aktualizuj wynik w interfejsie użytkownika w głównym wątku
             Clock.schedule_once(lambda dt, r=result: self.update_ping_list(r), 0)
-
         # Wywołujemy metodę ping_ip z klasy AddressPing
         self.ping_instance.ping_ip(ip_addr, ping_num, update_callback)
 

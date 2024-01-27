@@ -5,6 +5,7 @@
         "ShowAll": "Show all"
       },
       "InterfaceInformation": {
+        "IFEnabled":"State: ",
         "ChooseInterfaceButton": "Choose interface",
         "RefreshIntervalButton": "Choose refresh interval",
         "SelectedInterfaceLabel": "No selected interface",
@@ -46,8 +47,8 @@
         "ScanNetworkButton": "Scan Network"
       },
       "Ping": {
-        "PingIPAddressInputHint": "Enter IP Address",
-        "PingIPHelper":"ex. 192.168.1.1",
+        "PingIPAddressInputHint": "Enter IP Address or domain address",
+        "PingIPHelper":"ex. 192.168.1.1 or example.com",
         "PingCountInputHint": "Enter number of pings",
         "PingCountInputHelper": "ex. 10",
         "PingButton": "Ping"
@@ -103,7 +104,9 @@
         "StartAttack": "Start Attack",
         "NotInstalledLabel":"NMAP is not installed, press button to open NMAP download page",
         "NotInstalledButton":"Download NMAP",
-        "NoOpenPorts":"No open ports"
+        "NoOpenPorts":"No open ports",
+        "InvalidIPAddressOrDomain":"Invalid IP address or domain name",
+        "MustBePositive":"Number must be positive"
       }
     },
     "Polski": {
@@ -112,6 +115,7 @@
         "ShowAll": "Pokaż wszystkie"
       },
       "InterfaceInformation": {
+        "IFEnabled":"Status: ",
         "ChooseInterfaceButton": "Wybierz interfejs",
         "RefreshIntervalButton": "Wybierz interwał odświeżania",
         "SelectedInterfaceLabel": "Brak wybranego interfejsu",
@@ -152,8 +156,8 @@
         "ScanNetworkButton": "Skanuj sieć"
       },
       "Ping": {
-        "PingIPAddressInputHint": "Wprowadź adres IP",
-        "PingIPHelper":"np. 192.168.1.1",
+        "PingIPAddressInputHint": "Wprowadź adres IP lub nazwę domeny",
+        "PingIPHelper":"np. 192.168.1.1 lub example.com",
         "PingCountInputHint": "Podaj liczbę pingów",
         "PingCountInputHelper": "np. 10",
         "PingButton": "Ping"
@@ -192,6 +196,8 @@
         "SetLanguageButton":"Zmień język"
       },
       "StringsInCode": {
+        "IfEnabled":"Włączony",
+        "IfDisabled":"Wyłączony",
         "ShowOpenPorts": "Pokaż tylko otwarte",
         "ShowAll": "Pokaż wszystkie",
         "SelectedInterface": "Wybrany: ",
@@ -209,7 +215,9 @@
         "StartAttack": "Uruchom atak",
         "NotInstalledLabel":"NMAP nie jest zainstalowany. Naciśnij przycisk, aby otworzyć stronę pobierania NMAP.",
         "NotInstalledButton":"Pobierz NMAP",
-        "NoOpenPorts":"Brak otwartych portów"
+        "NoOpenPorts":"Brak otwartych portów",
+        "InvalidIPAddressOrDomain":"Nieprawidłowy adres IP lub nazwa domeny",
+        "MustBePositive":"Liczba nie może być ujemna"
       }
     }
   }

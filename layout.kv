@@ -31,6 +31,8 @@ MDScreen:
 					MDBoxLayout:
 						orientation: "vertical"
 						MDLabel:
+							text: app.translate("InterfaceInformation", "IFEnabled")
+						MDLabel:
 							text: app.translate("InterfaceInformation", "IPLabel")
 						MDLabel:
 							text: app.translate("InterfaceInformation", "MACLabel")
@@ -56,6 +58,9 @@ MDScreen:
 							text: app.translate("InterfaceInformation", "CurrentDownloadSpeedLabel")
 					MDBoxLayout:
 						orientation: "vertical"
+						MDLabel:
+                        	id:int_Enabled
+							text: app.translate("InterfaceInformation", "noData")
 						MDLabel:
                         	id:int_IP
 							text: app.translate("InterfaceInformation", "noData")
@@ -230,7 +235,7 @@ MDScreen:
 				padding: dp(10)
 				MDTextField:
 					id: ping_ip_address_input
-					on_text: app.is_valid_ip_or_domain(self.text)
+					on_text: app.is_valid_ip_or_domain(ping_ip_address_input.text,'ping_ip_address_input')
 					hint_text: app.translate("Ping","PingIPAddressInputHint")
 					helper_text: app.translate("Ping","PingIPHelper")
 					helper_text_mode: "on_focus"

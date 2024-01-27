@@ -18,10 +18,8 @@ class adress_ping:
                 if output == '' and process.poll() is not None:
                     break
                 if output:
-                    # Wywołaj funkcję zwrotną (callback) z wynikiem
                     callback(output.strip())
 
-            # Poczekaj na zakończenie procesu i pobierz ewentualne błędy
             process.wait()
             error_output = process.stderr.read()
             if error_output:
